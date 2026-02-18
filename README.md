@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# Personal Finance (Expo + TypeScript)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Offline-first personal finance app for iOS built with Expo and React Native.
 
-## Get started
+## Package Manager
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Use `pnpm` only.
 
 ```bash
-npm run reset-project
+pnpm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Local Setup
 
-## Learn more
+1. Install dependencies:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+pnpm install
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. Run quality checks:
 
-## Join the community
+```bash
+pnpm check
+```
 
-Join our community of developers creating universal apps.
+3. Start Expo:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+pnpm start
+```
+
+## iOS Dev Client Workflow
+
+1. Build and install the iOS development client:
+
+```bash
+pnpm expo run:ios
+```
+
+2. Start Metro for the dev client:
+
+```bash
+pnpm start -- --dev-client
+```
+
+3. Open the installed app in iOS Simulator/device and connect to Metro.
+
+## Useful Commands
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm ios
+pnpm web
+```

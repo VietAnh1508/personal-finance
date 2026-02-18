@@ -33,6 +33,7 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
    - then implement.
 
 ## Engineering Guidelines
+0. Use `pnpm` as the package manager for all install/run workflows in this repository.
 1. Keep business logic in domain/services, not UI components.
 2. Money values must use integer smallest units only (no float math).
 3. Keep transfer operations atomic/consistent (both sides update/delete together).
@@ -54,4 +55,4 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
 - Story acceptance criteria are satisfied.
 - Code compiles and relevant tests pass.
 - `docs/PROGRESS.md` updated.
-- Any needed doc clarifications are committed with the change.
+- Any needed doc clarifications are committed with the change.`

@@ -10,7 +10,7 @@
 - Define and deliver MVP stories in order.
 
 ## User Stories
-- [ ] US-000 Setup Expo project
+- [x] US-000 Setup Expo project
 - [ ] US-001 Select currency on first launch
 - [ ] US-002 Create first wallet
 - [ ] US-003 Transactions top bar context
@@ -29,3 +29,4 @@
 ## Notes
 - Update status as each story starts/completes.
 - Add implementation links or PR references under each story as needed.
+- Package manager standard: use `pnpm` for all dependency management and scripts.
