@@ -12,7 +12,7 @@
 ## User Stories
 - [x] US-000 Setup Expo project
 - [x] US-001 Select currency on first launch
-- [ ] US-002 Create first wallet
+- [x] US-002 Create first wallet
 - [ ] US-003 Transactions top bar context
 - [ ] US-004 Switch wallet context
 - [ ] US-005 Add income/expense
@@ -30,3 +30,8 @@
 - Update status as each story starts/completes.
 - Add implementation links or PR references under each story as needed.
 - Package manager standard: use `pnpm` for all dependency management and scripts.
+- Temporary dev-only reset flow exists for onboarding tests; track removal before release:
+  - `app/(tabs)/settings.tsx` (`Reset local data (dev)` action)
+  - `src/domain/services/app-maintenance-service.ts`
+  - `src/data/repositories/app-data-repository.ts`
+  - `src/data/database/index.ts` (`clearAppData`)

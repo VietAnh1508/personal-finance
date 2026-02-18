@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
 import { ThemedView } from '@/components/themed-view';
-import { getSelectedCurrency } from '@/domain/services';
+import { getSelectedCurrency, hasAnyActiveWallet } from '@/domain/services';
 
 export default function IndexScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasCurrencyPreference, setHasCurrencyPreference] = useState(false);
+  const [hasWallet, setHasWallet] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -15,8 +16,10 @@ export default function IndexScreen() {
     const loadPreference = async () => {
       try {
         const selectedCurrency = await getSelectedCurrency();
+        const walletExists = await hasAnyActiveWallet();
         if (isMounted) {
           setHasCurrencyPreference(Boolean(selectedCurrency));
+          setHasWallet(walletExists);
         }
       } finally {
         if (isMounted) {
@@ -41,6 +44,10 @@ export default function IndexScreen() {
   }
 
   if (hasCurrencyPreference) {
+    if (hasWallet) {
+      return <Redirect href="/(tabs)" />;
+    }
+
     return <Redirect href="/first-wallet" />;
   }
 

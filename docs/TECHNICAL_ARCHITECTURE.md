@@ -62,6 +62,7 @@ SQLite is used as the primary local storage engine.
 - `id` (uuid, primary key)
 - `name` (text)
 - `initialBalance` (integer)
+- `iconKey` (text; predefined wallet icon key)
 - `archivedAt` (datetime, nullable)
 - `createdAt` (datetime)
 - `updatedAt` (datetime)

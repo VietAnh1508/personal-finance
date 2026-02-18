@@ -10,3 +10,5 @@ so that I can start tracking transactions.
 2. Wallet form includes at least: wallet name and initial balance.
 3. New wallet is created as active (not archived).
 4. After save, app navigates to Transactions tab scoped to the new wallet.
+5. Initial balance input displays grouped thousands separators for readability (e.g., `1,000,000`).
+6. Wallet form includes predefined wallet icon options for the user to select.

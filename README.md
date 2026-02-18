@@ -54,3 +54,18 @@ pnpm typecheck
 pnpm ios
 pnpm web
 ```
+
+## Local Data Reset (Dev)
+
+- In development builds, open `Settings` and tap `Reset local data (dev)`.
+- This clears local SQLite data for wallets and currency preference, then routes back to onboarding flow.
+
+## Temporary Dev-Only Additions
+
+- Purpose: testing first-launch and onboarding flows repeatedly during early stories.
+- Remove when: we ship production-ready Settings management for wallets/currency (or before release build hardening).
+- Files/components tied to this temporary flow:
+  - `app/(tabs)/settings.tsx` (`Reset local data (dev)` button guarded by `__DEV__`)
+  - `src/domain/services/app-maintenance-service.ts`
+  - `src/data/repositories/app-data-repository.ts`
+  - `src/data/database/index.ts` (`clearAppData` function)
