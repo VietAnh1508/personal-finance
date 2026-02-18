@@ -13,7 +13,7 @@
 - [x] US-000 Setup Expo project
 - [x] US-001 Select currency on first launch
 - [x] US-002 Create first wallet
-- [ ] US-003 Transactions top bar context
+- [x] US-003 Transactions top bar context
 - [ ] US-004 Switch wallet context
 - [ ] US-005 Add income/expense
 - [ ] US-006 Wallet preselection across add screens

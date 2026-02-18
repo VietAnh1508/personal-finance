@@ -1,4 +1,4 @@
-import { getActiveWalletCount, getFirstActiveWallet, insertWallet } from '@/data/database';
+import { getActiveWalletCount, getActiveWallets, getFirstActiveWallet, insertWallet } from '@/data/database';
 import { WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
 
 export type ActiveWallet = {
@@ -31,4 +31,15 @@ export async function getDefaultActiveWallet(): Promise<ActiveWallet | null> {
     initialBalance: wallet.initialBalance,
     iconKey,
   };
+}
+
+export async function listActiveWallets(): Promise<ActiveWallet[]> {
+  const wallets = await getActiveWallets();
+
+  return wallets.map((wallet) => ({
+    id: wallet.id,
+    name: wallet.name,
+    initialBalance: wallet.initialBalance,
+    iconKey: isSupportedWalletIconKey(wallet.iconKey) ? wallet.iconKey : 'wallet',
+  }));
 }

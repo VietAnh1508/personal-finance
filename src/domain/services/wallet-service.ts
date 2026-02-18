@@ -2,6 +2,7 @@ import {
   ActiveWallet,
   getDefaultActiveWallet,
   hasActiveWallet,
+  listActiveWallets,
   saveWallet,
 } from '@/data/repositories';
 import { WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
@@ -16,6 +17,10 @@ export async function hasAnyActiveWallet(): Promise<boolean> {
 
 export async function getCurrentWallet(): Promise<ActiveWallet | null> {
   return getDefaultActiveWallet();
+}
+
+export async function getAllActiveWallets(): Promise<ActiveWallet[]> {
+  return listActiveWallets();
 }
 
 export async function createWallet(

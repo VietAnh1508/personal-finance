@@ -136,6 +136,20 @@ export async function getFirstActiveWallet(): Promise<WalletRow | null> {
   return result ?? null;
 }
 
+export async function getActiveWallets(): Promise<WalletRow[]> {
+  const db = await getDatabase();
+  const result = await db.getAllAsync<WalletRow>(
+    `
+      SELECT id, name, initialBalance, iconKey, archivedAt
+      FROM wallets
+      WHERE archivedAt IS NULL
+      ORDER BY createdAt ASC;
+    `
+  );
+
+  return result;
+}
+
 export async function clearAppData(): Promise<void> {
   const db = await getDatabase();
   await db.execAsync(`

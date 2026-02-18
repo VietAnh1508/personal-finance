@@ -55,6 +55,24 @@ pnpm ios
 pnpm web
 ```
 
+## Currency Display Setup
+
+- Supported currencies are defined in `src/domain/currency.ts` via `CURRENCY_OPTIONS`.
+- Each currency includes `symbol` and `fractionDigits` metadata used by UI formatting.
+- Balance/amount screens should use domain helpers instead of hardcoded currency checks:
+  - `getCurrencySymbol(code)`
+  - `getCurrencyFractionDigits(code)`
+
+### Add a New Currency
+
+1. Add a new entry in `CURRENCY_OPTIONS` with:
+   - `code`
+   - `label`
+   - `symbol`
+   - `fractionDigits`
+2. Ensure the code is selectable where currency preferences are set.
+3. Do not add screen-level `if (currency === ...)` logic for formatting; rely on metadata helpers.
+
 ## Local Data Reset (Dev)
 
 - In development builds, open `Settings` and tap `Reset local data (dev)`.

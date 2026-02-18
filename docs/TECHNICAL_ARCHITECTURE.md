@@ -93,6 +93,7 @@ Rules:
 - One global currency preference is applied across all wallets.
 - Currency is selected from a predefined list (initially `USD`, `VND`), not manual free-text entry.
 - Updating currency changes display symbol/format only; stored transaction amounts are not converted.
+- Currency display behavior (symbol and decimal precision) is defined in domain metadata (`src/domain/currency.ts`), not hardcoded in screen components.
 
 #### transactions
 - `id` (uuid, primary key)
@@ -121,6 +122,21 @@ Rules:
 ## 5. Domain Layer
 
 The domain layer contains all financial logic and must be UI-agnostic.
+
+### 5.0 Currency Metadata
+
+`src/domain/currency.ts` is the single source of truth for supported currencies and display metadata.
+
+Each currency entry includes:
+- `code`
+- `label`
+- `symbol`
+- `fractionDigits` (UI formatting precision, e.g. `USD: 2`, `VND: 0`)
+
+Helpers:
+- `getCurrencySymbol(code)`
+- `getCurrencyFractionDigits(code)`
+- `isSupportedCurrencyCode(value)`
 
 ### 5.1 WalletService
 

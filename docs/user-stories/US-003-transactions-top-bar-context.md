@@ -10,3 +10,4 @@ so that I can switch wallet scope and view the current total quickly.
 2. Top-center shows total amount for current wallet context.
 3. If context is `All Wallets`, center total equals combined total of all active wallets.
 4. Top-right shows actions menu icon with actions: `Transfer` and `Adjust balance`.
+5. Wallet icons used in the top bar context/selector must reuse the shared `WALLET_ICON_OPTIONS` from `src/domain/wallet-icon.ts` (single source of truth).
