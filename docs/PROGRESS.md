@@ -11,7 +11,7 @@
 
 ## User Stories
 - [x] US-000 Setup Expo project
-- [ ] US-001 Select currency on first launch
+- [x] US-001 Select currency on first launch
 - [ ] US-002 Create first wallet
 - [ ] US-003 Transactions top bar context
 - [ ] US-004 Switch wallet context

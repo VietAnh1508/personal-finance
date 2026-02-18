@@ -3,12 +3,12 @@ import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-export default function TransactionsScreen() {
+export function FirstWalletScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Transactions</ThemedText>
+      <ThemedText type="title">Create Your First Wallet</ThemedText>
       <ThemedText style={styles.subtitle}>
-        Transactions list and top bar context will be added in upcoming stories.
+        Wallet setup will be implemented in the next user story.
       </ThemedText>
     </ThemedView>
   );
