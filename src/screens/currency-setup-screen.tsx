@@ -6,9 +6,11 @@ import { CURRENCY_OPTIONS, CurrencyCode } from '@/domain/currency';
 import { selectCurrency } from '@/domain/services';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useToast } from '@/components/ui/toast-provider';
 
 export function CurrencySetupScreen() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyCode | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -22,9 +24,11 @@ export function CurrencySetupScreen() {
       setIsSaving(true);
       setErrorMessage(null);
       await selectCurrency(selectedCurrency);
+      showToast({ message: 'Currency saved.', type: 'success' });
       router.replace('/first-wallet');
     } catch {
       setErrorMessage('Unable to save your currency. Please try again.');
+      showToast({ message: 'Unable to save your currency. Please try again.', type: 'error' });
     } finally {
       setIsSaving(false);
     }

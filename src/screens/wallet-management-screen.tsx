@@ -15,6 +15,7 @@ import {
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useToast } from '@/components/ui/toast-provider';
 import {
   archiveWallet,
   createWallet,
@@ -44,6 +45,7 @@ async function fetchWalletSettingsData() {
 }
 
 export function WalletManagementScreen() {
+  const { showToast } = useToast();
   const [wallets, setWallets] = useState<WalletItem[]>([]);
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
   const [currencySymbol, setCurrencySymbol] = useState('$');
@@ -157,6 +159,7 @@ export function WalletManagementScreen() {
     try {
       setIsSavingWallet(true);
       setWalletErrorMessage(null);
+      const completedMode = walletFormMode;
 
       if (walletFormMode === 'create') {
         if (parsedWalletBalance === null) {
@@ -176,8 +179,16 @@ export function WalletManagementScreen() {
 
       await refreshData();
       setIsWalletModalOpen(false);
+      showToast({
+        message:
+          completedMode === 'create'
+            ? 'Wallet created successfully.'
+            : 'Wallet updated successfully.',
+        type: 'success',
+      });
     } catch {
       setWalletErrorMessage('Unable to save wallet. Please try again.');
+      showToast({ message: 'Unable to save wallet. Please try again.', type: 'error' });
     } finally {
       setIsSavingWallet(false);
     }
@@ -196,8 +207,10 @@ export function WalletManagementScreen() {
             try {
               await archiveWallet(wallet.id);
               await refreshData();
+              showToast({ message: 'Wallet archived.', type: 'success' });
             } catch {
               Alert.alert('Unable to archive wallet', 'Please try again.');
+              showToast({ message: 'Unable to archive wallet. Please try again.', type: 'error' });
             }
           },
         },

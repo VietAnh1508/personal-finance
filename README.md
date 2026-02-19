@@ -73,6 +73,17 @@ pnpm web
 2. Ensure the code is selectable where currency preferences are set.
 3. Do not add screen-level `if (currency === ...)` logic for formatting; rely on metadata helpers.
 
+## Toast Feedback
+
+- A custom app-wide toast system is implemented in `src/components/ui/toast-provider.tsx`.
+- `ToastProvider` is mounted in `app/_layout.tsx` so any screen can trigger feedback.
+- Use `useToast()` and call `showToast({ message, type })` after async actions:
+  - `type: 'success' | 'error' | 'info'`
+  - optional `durationMs` to override the default auto-dismiss timing
+- Current wallet flow usage:
+  - `src/screens/first-wallet-screen.tsx`
+  - `src/screens/wallet-management-screen.tsx`
+
 ## Local Data Reset (Dev)
 
 - In development builds, open `Settings` and tap `Reset local data (dev)`.

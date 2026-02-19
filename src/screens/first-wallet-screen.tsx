@@ -13,6 +13,7 @@ import {
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useToast } from "@/components/ui/toast-provider";
 import { createWallet, setLastUsedWalletContext } from "@/domain/services";
 import {
   getWalletMaterialIconName,
@@ -23,6 +24,7 @@ import { formatAmountInput, parseAmountToMinorUnits } from "@/utils/money-format
 
 export function FirstWalletScreen() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [walletName, setWalletName] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
   const [selectedIconKey, setSelectedIconKey] =
@@ -52,9 +54,14 @@ export function FirstWalletScreen() {
         selectedIconKey,
       );
       await setLastUsedWalletContext(wallet.id);
+      showToast({ message: "Wallet created successfully.", type: "success" });
       router.replace("/(tabs)");
     } catch {
       setErrorMessage("Unable to create wallet. Please try again.");
+      showToast({
+        message: "Unable to create wallet. Please try again.",
+        type: "error",
+      });
     } finally {
       setIsSaving(false);
     }

@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { ToastProvider } from '@/components/ui/toast-provider';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const unstable_settings = {
@@ -14,21 +15,23 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="currency-setup"
-          options={{ headerShown: false, gestureEnabled: false }}
-        />
-        <Stack.Screen name="first-wallet" options={{ title: 'Wallet Setup', headerBackVisible: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="settings/wallets"
-          options={{ title: 'Wallets', headerBackButtonDisplayMode: 'minimal' }}
-        />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+      <ToastProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="currency-setup"
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+          <Stack.Screen name="first-wallet" options={{ title: 'Wallet Setup', headerBackVisible: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="settings/wallets"
+            options={{ title: 'Wallets', headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </ToastProvider>
     </ThemeProvider>
   );
 }
