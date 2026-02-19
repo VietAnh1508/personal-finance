@@ -26,6 +26,7 @@
 - [ ] US-013 Future-dated transaction rules
 - [ ] US-014 Currency change no-conversion warning
 - [x] US-015 Action feedback with toast notifications
+- [x] US-016 Group transactions by date on Transactions screen
 
 ## Notes
 - Update status as each story starts/completes.

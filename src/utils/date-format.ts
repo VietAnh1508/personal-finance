@@ -49,3 +49,51 @@ export function formatIsoDateForDisplay(isoDate: string): string {
   const year = parsed.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export function formatIsoDateDayNumber(isoDate: string): string {
+  const parsed = parseIsoDate(isoDate);
+  if (!parsed) {
+    return isoDate;
+  }
+
+  return `${parsed.getDate()}`;
+}
+
+export function formatIsoDateWeekdayMonthYear(
+  isoDate: string,
+  locale = 'en-US'
+): string {
+  const parsed = parseIsoDate(isoDate);
+  if (!parsed) {
+    return isoDate;
+  }
+
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(parsed);
+  const monthYear = new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+  }).format(parsed);
+
+  return `${weekday}, ${monthYear}`;
+}
+
+export function formatIsoDateWeekday(isoDate: string, locale = 'en-US'): string {
+  const parsed = parseIsoDate(isoDate);
+  if (!parsed) {
+    return isoDate;
+  }
+
+  return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(parsed);
+}
+
+export function formatIsoDateMonthYear(isoDate: string, locale = 'en-US'): string {
+  const parsed = parseIsoDate(isoDate);
+  if (!parsed) {
+    return isoDate;
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+  }).format(parsed);
+}

@@ -1,75 +1,149 @@
-import { useFocusEffect } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 
-import { TransactionEntry } from '@/data/repositories';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { CurrencyCode, getCurrencyFractionDigits, getCurrencySymbol } from '@/domain/currency';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { TransactionEntry } from "@/data/repositories";
+import {
+  CurrencyCode,
+  getCurrencyFractionDigits,
+  getCurrencySymbol,
+} from "@/domain/currency";
 import {
   getAllActiveWallets,
-  getSignedTransactionAmount,
-  getTransactionsForWalletContext,
   getLastUsedWalletContext,
   getSelectedCurrency,
+  getSignedTransactionAmount,
+  getTransactionsForWalletContext,
   setLastUsedWalletContext,
-} from '@/domain/services';
-import { WalletIconKey, getWalletMaterialIconName } from '@/domain/wallet-icon';
-import { formatIsoDateForDisplay } from '@/utils/date-format';
-import { formatMinorUnits } from '@/utils/money-format';
+} from "@/domain/services";
+import { WalletIconKey, getWalletMaterialIconName } from "@/domain/wallet-icon";
+import {
+  formatIsoDateDayNumber,
+  formatIsoDateMonthYear,
+  formatIsoDateWeekday,
+} from "@/utils/date-format";
+import { formatMinorUnits } from "@/utils/money-format";
 
-type WalletContextValue = 'all' | string;
+type WalletContextValue = "all" | string;
+type DateSection = {
+  date: string;
+  dayNumber: string;
+  weekdayLabel: string;
+  monthYearLabel: string;
+  dailyNet: number;
+  transactions: TransactionEntry[];
+};
+
+function formatSignedMinorUnits(
+  amount: number,
+  currencySymbol: string,
+  fractionDigits: number,
+): string {
+  if (amount === 0) {
+    return formatMinorUnits(0, currencySymbol, fractionDigits);
+  }
+
+  const sign = amount > 0 ? "+" : "-";
+  return `${sign}${formatMinorUnits(Math.abs(amount), currencySymbol, fractionDigits)}`;
+}
 
 export default function TransactionsScreen() {
   const [wallets, setWallets] = useState<
-    { id: string; name: string; initialBalance: number; iconKey: WalletIconKey }[]
+    {
+      id: string;
+      name: string;
+      initialBalance: number;
+      iconKey: WalletIconKey;
+    }[]
   >([]);
   const [transactions, setTransactions] = useState<TransactionEntry[]>([]);
-  const [selectedContext, setSelectedContext] = useState<WalletContextValue>('all');
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
-  const [currencySymbol, setCurrencySymbol] = useState('$');
+  const [selectedContext, setSelectedContext] =
+    useState<WalletContextValue>("all");
+  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>("USD");
+  const [currencySymbol, setCurrencySymbol] = useState("$");
   const [isWalletSelectorOpen, setIsWalletSelectorOpen] = useState(false);
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const selectedWallet = useMemo(
     () => wallets.find((wallet) => wallet.id === selectedContext) ?? null,
-    [selectedContext, wallets]
+    [selectedContext, wallets],
   );
   const netByWalletId = useMemo(() => {
     const netMap: Record<string, number> = {};
     for (const transaction of transactions) {
       const signedAmount = getSignedTransactionAmount(transaction);
-      netMap[transaction.walletId] = (netMap[transaction.walletId] ?? 0) + signedAmount;
+      netMap[transaction.walletId] =
+        (netMap[transaction.walletId] ?? 0) + signedAmount;
     }
 
     return netMap;
   }, [transactions]);
   const visibleTransactions = useMemo(() => {
-    if (selectedContext === 'all') {
+    if (selectedContext === "all") {
       return transactions;
     }
 
-    return transactions.filter((transaction) => transaction.walletId === selectedContext);
+    return transactions.filter(
+      (transaction) => transaction.walletId === selectedContext,
+    );
   }, [selectedContext, transactions]);
+  const dateSections = useMemo<DateSection[]>(() => {
+    const sectionsByDate = new Map<string, DateSection>();
+
+    for (const transaction of visibleTransactions) {
+      const signedAmount = getSignedTransactionAmount(transaction);
+      const existingSection = sectionsByDate.get(transaction.date);
+
+      if (existingSection) {
+        existingSection.transactions.push(transaction);
+        existingSection.dailyNet += signedAmount;
+        continue;
+      }
+
+      sectionsByDate.set(transaction.date, {
+        date: transaction.date,
+        dayNumber: formatIsoDateDayNumber(transaction.date),
+        weekdayLabel: formatIsoDateWeekday(transaction.date),
+        monthYearLabel: formatIsoDateMonthYear(transaction.date),
+        dailyNet: signedAmount,
+        transactions: [transaction],
+      });
+    }
+
+    return Array.from(sectionsByDate.values());
+  }, [visibleTransactions]);
   const displayedTotalMinorUnits = useMemo(() => {
-    if (selectedContext === 'all') {
+    if (selectedContext === "all") {
       return wallets.reduce(
-        (total, wallet) => total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0),
-        0
+        (total, wallet) =>
+          total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0),
+        0,
       );
     }
 
-    return (selectedWallet?.initialBalance ?? 0) + (selectedWallet ? netByWalletId[selectedWallet.id] ?? 0 : 0);
+    return (
+      (selectedWallet?.initialBalance ?? 0) +
+      (selectedWallet ? (netByWalletId[selectedWallet.id] ?? 0) : 0)
+    );
   }, [netByWalletId, selectedContext, selectedWallet, wallets]);
   const selectorIconName =
-    selectedContext === 'all'
-      ? 'account-balance'
-      : getWalletMaterialIconName(selectedWallet?.iconKey ?? 'wallet');
+    selectedContext === "all"
+      ? "account-balance"
+      : getWalletMaterialIconName(selectedWallet?.iconKey ?? "wallet");
   const currencyFractionDigits = useMemo(
     () => getCurrencyFractionDigits(currencyCode),
-    [currencyCode]
+    [currencyCode],
   );
 
   useFocusEffect(
@@ -78,17 +152,19 @@ export default function TransactionsScreen() {
 
       const loadContextData = async () => {
         try {
-          const [activeWallets, selectedCurrency, lastUsedWalletContext] = await Promise.all([
-            getAllActiveWallets(),
-            getSelectedCurrency(),
-            getLastUsedWalletContext(),
-          ]);
-          const allTransactions = await getTransactionsForWalletContext('all');
+          const [activeWallets, selectedCurrency, lastUsedWalletContext] =
+            await Promise.all([
+              getAllActiveWallets(),
+              getSelectedCurrency(),
+              getLastUsedWalletContext(),
+            ]);
+          const allTransactions = await getTransactionsForWalletContext("all");
 
           const normalizedContext =
-            lastUsedWalletContext && activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
+            lastUsedWalletContext &&
+            activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
               ? lastUsedWalletContext
-              : 'all';
+              : "all";
 
           if (normalizedContext !== lastUsedWalletContext) {
             setLastUsedWalletContext(normalizedContext).catch(() => {
@@ -99,8 +175,10 @@ export default function TransactionsScreen() {
           if (isMounted) {
             setWallets(activeWallets);
             setTransactions(allTransactions);
-            setCurrencyCode(selectedCurrency ?? 'USD');
-            setCurrencySymbol(selectedCurrency ? getCurrencySymbol(selectedCurrency) : '$');
+            setCurrencyCode(selectedCurrency ?? "USD");
+            setCurrencySymbol(
+              selectedCurrency ? getCurrencySymbol(selectedCurrency) : "$",
+            );
             setSelectedContext(normalizedContext);
           }
         } finally {
@@ -116,7 +194,7 @@ export default function TransactionsScreen() {
       return () => {
         isMounted = false;
       };
-    }, [])
+    }, []),
   );
 
   const onSelectWalletContext = (context: WalletContextValue) => {
@@ -127,14 +205,20 @@ export default function TransactionsScreen() {
     });
   };
 
-  const onOpenAction = (actionLabel: 'Transfer' | 'Adjust balance') => {
+  const onOpenAction = (actionLabel: "Transfer" | "Adjust balance") => {
     setIsActionsMenuOpen(false);
-    if (actionLabel === 'Transfer' && wallets.length < 2) {
-      Alert.alert('Transfer unavailable', 'At least two active wallets are required.');
+    if (actionLabel === "Transfer" && wallets.length < 2) {
+      Alert.alert(
+        "Transfer unavailable",
+        "At least two active wallets are required.",
+      );
       return;
     }
 
-    Alert.alert(actionLabel, `${actionLabel} will be added in upcoming stories.`);
+    Alert.alert(
+      actionLabel,
+      `${actionLabel} will be added in upcoming stories.`,
+    );
   };
 
   return (
@@ -152,12 +236,24 @@ export default function TransactionsScreen() {
               onPress={() => setIsWalletSelectorOpen(true)}
               style={[styles.iconButton, styles.walletSelectorButton]}
             >
-              <MaterialIcons color="#5c5c5c" name={selectorIconName} size={20} />
-              <MaterialIcons color="#5c5c5c" name="keyboard-arrow-down" size={16} />
+              <MaterialIcons
+                color="#5c5c5c"
+                name={selectorIconName}
+                size={20}
+              />
+              <MaterialIcons
+                color="#5c5c5c"
+                name="keyboard-arrow-down"
+                size={16}
+              />
             </Pressable>
 
             <ThemedText style={styles.totalText} type="defaultSemiBold">
-              {formatMinorUnits(displayedTotalMinorUnits, currencySymbol, currencyFractionDigits)}
+              {formatMinorUnits(
+                displayedTotalMinorUnits,
+                currencySymbol,
+                currencyFractionDigits,
+              )}
             </ThemedText>
 
             <Pressable
@@ -169,36 +265,96 @@ export default function TransactionsScreen() {
               <MaterialIcons color="#5c5c5c" name="more-vert" size={20} />
             </Pressable>
           </ThemedView>
+          <ThemedView style={styles.topListDivider} />
 
-          <ThemedText style={styles.subtitle}>
-            {visibleTransactions.length === 0 ? 'No transactions yet.' : 'Recent transactions'}
-          </ThemedText>
-          {visibleTransactions.map((transaction) => {
-            const signedAmount = getSignedTransactionAmount(transaction);
-            const amountColor = signedAmount < 0 ? '#c0392b' : '#1f8b4c';
-
-            return (
-              <ThemedView key={transaction.id} style={styles.transactionCard}>
-                <ThemedView style={styles.transactionPrimaryRow}>
-                  <ThemedText type="defaultSemiBold">{transaction.category}</ThemedText>
-                  <ThemedText style={[styles.transactionAmount, { color: amountColor }]}>
-                    {formatMinorUnits(signedAmount, currencySymbol, currencyFractionDigits)}
+          <ScrollView
+            contentContainerStyle={styles.listContentContainer}
+            showsVerticalScrollIndicator={false}
+            style={styles.listScrollView}
+          >
+            {visibleTransactions.length === 0 ? (
+              <ThemedText style={styles.subtitle}>
+                No transactions yet.
+              </ThemedText>
+            ) : null}
+            {dateSections.map((section) => (
+              <ThemedView key={section.date} style={styles.sectionContainer}>
+                <ThemedView style={styles.sectionHeader}>
+                  <ThemedView style={styles.sectionTitleContainer}>
+                    <ThemedText
+                      style={styles.sectionDayNumber}
+                      type="defaultSemiBold"
+                    >
+                      {section.dayNumber}
+                    </ThemedText>
+                    <ThemedView style={styles.sectionDateTextContainer}>
+                      <ThemedText style={styles.sectionWeekdayText}>
+                        {section.weekdayLabel}
+                      </ThemedText>
+                      <ThemedText style={styles.sectionMonthYearText}>
+                        {section.monthYearLabel}
+                      </ThemedText>
+                    </ThemedView>
+                  </ThemedView>
+                  <ThemedText
+                    style={styles.sectionNetAmount}
+                    type="defaultSemiBold"
+                  >
+                    {formatSignedMinorUnits(
+                      section.dailyNet,
+                      currencySymbol,
+                      currencyFractionDigits,
+                    )}
                   </ThemedText>
                 </ThemedView>
-                <ThemedView style={styles.transactionMetaRow}>
-                  <ThemedText style={styles.transactionMetaText}>
-                    {transaction.type === 'income' ? 'Income' : 'Expense'}
-                  </ThemedText>
-                  <ThemedText style={styles.transactionMetaText}>
-                    {formatIsoDateForDisplay(transaction.date)}
-                  </ThemedText>
+                <ThemedView style={styles.sectionDivider} />
+
+                <ThemedView style={styles.sectionBody}>
+                  {section.transactions.map((transaction, transactionIndex) => {
+                    const signedAmount =
+                      getSignedTransactionAmount(transaction);
+                    const amountColor =
+                      signedAmount < 0 ? "#c0392b" : "#1f8b4c";
+
+                    return (
+                      <ThemedView
+                        key={transaction.id}
+                        style={[
+                          styles.transactionCard,
+                          transactionIndex > 0
+                            ? styles.transactionCardWithDivider
+                            : null,
+                        ]}
+                      >
+                        <ThemedView style={styles.transactionPrimaryRow}>
+                          <ThemedText type="defaultSemiBold">
+                            {transaction.category}
+                          </ThemedText>
+                          <ThemedText
+                            style={[
+                              styles.transactionAmount,
+                              { color: amountColor },
+                            ]}
+                          >
+                            {formatMinorUnits(
+                              Math.abs(signedAmount),
+                              currencySymbol,
+                              currencyFractionDigits,
+                            )}
+                          </ThemedText>
+                        </ThemedView>
+                        {transaction.note ? (
+                          <ThemedText style={styles.transactionNoteText}>
+                            {transaction.note}
+                          </ThemedText>
+                        ) : null}
+                      </ThemedView>
+                    );
+                  })}
                 </ThemedView>
-                {transaction.note ? (
-                  <ThemedText style={styles.transactionNoteText}>{transaction.note}</ThemedText>
-                ) : null}
               </ThemedView>
-            );
-          })}
+            ))}
+          </ScrollView>
         </ThemedView>
       )}
 
@@ -215,14 +371,18 @@ export default function TransactionsScreen() {
           <Pressable style={styles.menuCard}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => onSelectWalletContext('all')}
+              onPress={() => onSelectWalletContext("all")}
               style={styles.menuItem}
             >
               <ThemedView style={styles.menuItemContent}>
-                <MaterialIcons color="#5c5c5c" name="account-balance" size={18} />
+                <MaterialIcons
+                  color="#5c5c5c"
+                  name="account-balance"
+                  size={18}
+                />
                 <ThemedText>All Wallets</ThemedText>
               </ThemedView>
-              {selectedContext === 'all' ? (
+              {selectedContext === "all" ? (
                 <MaterialIcons color="#0a7ea4" name="check" size={18} />
               ) : null}
             </Pressable>
@@ -264,14 +424,14 @@ export default function TransactionsScreen() {
           <Pressable style={styles.menuCard}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => onOpenAction('Transfer')}
+              onPress={() => onOpenAction("Transfer")}
               style={styles.menuItem}
             >
               <ThemedText>Transfer</ThemedText>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              onPress={() => onOpenAction('Adjust balance')}
+              onPress={() => onOpenAction("Adjust balance")}
               style={styles.menuItem}
             >
               <ThemedText>Adjust balance</ThemedText>
@@ -290,60 +450,121 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   contentContainer: {
+    flex: 1,
     paddingHorizontal: 24,
-    gap: 16,
+    gap: 12,
   },
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   subtitle: {
     opacity: 0.8,
   },
-  transactionCard: {
-    borderRadius: 12,
+  sectionContainer: {
+    borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#d8d8d8',
-    backgroundColor: '#ffffff',
+    borderColor: "#d6d6d6",
+    backgroundColor: "#ffffff",
+    overflow: "hidden",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 10,
+  },
+  sectionTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  sectionDateTextContainer: {
+    justifyContent: "center",
+    gap: 1,
+  },
+  sectionDayNumber: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: "600",
+    opacity: 0.9,
+  },
+  sectionWeekdayText: {
+    fontSize: 15,
+    lineHeight: 20,
+    opacity: 0.9,
+  },
+  sectionMonthYearText: {
+    fontSize: 13,
+    lineHeight: 18,
+    opacity: 0.68,
+  },
+  sectionNetAmount: {
+    fontSize: 16,
+    lineHeight: 22,
+    color: "#111111",
+  },
+  sectionDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#e1e1e1",
+  },
+  sectionBody: {
+    padding: 10,
+    gap: 0,
+  },
+  transactionCard: {
+    paddingHorizontal: 6,
     paddingVertical: 12,
-    gap: 8,
+    gap: 4,
+  },
+  transactionCardWithDivider: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#e8e8e8",
+  },
+  topListDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#cfcfcf",
+    marginTop: -4,
+    marginBottom: 2,
+  },
+  listScrollView: {
+    flex: 1,
+  },
+  listContentContainer: {
+    paddingTop: 10,
+    paddingBottom: 40,
+    gap: 12,
   },
   transactionPrimaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   transactionAmount: {
-    fontWeight: '600',
-  },
-  transactionMetaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  transactionMetaText: {
-    opacity: 0.75,
+    fontWeight: "600",
   },
   transactionNoteText: {
-    opacity: 0.85,
+    fontSize: 14,
+    opacity: 0.62,
   },
   iconButton: {
     width: 36,
     height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 18,
   },
   walletSelectorButton: {
-    width: 'auto',
+    width: "auto",
     paddingHorizontal: 8,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 2,
   },
   totalText: {
@@ -351,38 +572,38 @@ const styles = StyleSheet.create({
   },
   walletMenuOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.16)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    backgroundColor: "rgba(0, 0, 0, 0.16)",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     paddingTop: 128,
     paddingHorizontal: 16,
   },
   actionsMenuOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.16)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.16)",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
     paddingTop: 128,
     paddingHorizontal: 16,
   },
   menuCard: {
     minWidth: 210,
     borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
+    overflow: "hidden",
+    backgroundColor: "#fff",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#d8d8d8',
+    borderColor: "#d8d8d8",
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
   menuItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
 });
