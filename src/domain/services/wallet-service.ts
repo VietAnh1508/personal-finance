@@ -6,6 +6,7 @@ import {
   getLastSelectedWalletContext,
   hasActiveWallet,
   listActiveWallets,
+  listArchivedWallets,
   saveLastSelectedWalletContext,
   saveWallet,
 } from '@/data/repositories';
@@ -25,6 +26,10 @@ export async function getCurrentWallet(): Promise<ActiveWallet | null> {
 
 export async function getAllActiveWallets(): Promise<ActiveWallet[]> {
   return listActiveWallets();
+}
+
+export async function getAllArchivedWallets(): Promise<ActiveWallet[]> {
+  return listArchivedWallets();
 }
 
 export async function createWallet(

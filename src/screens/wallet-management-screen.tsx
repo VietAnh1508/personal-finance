@@ -9,6 +9,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Switch,
   StyleSheet,
   TextInput,
 } from 'react-native';
@@ -20,6 +21,7 @@ import {
   archiveWallet,
   createWallet,
   getAllActiveWallets,
+  getAllArchivedWallets,
   getSelectedCurrency,
   updateWalletDetails,
 } from '@/domain/services';
@@ -40,13 +42,21 @@ type WalletItem = {
 
 type WalletFormMode = 'create' | 'edit';
 
-async function fetchWalletSettingsData() {
-  return Promise.all([getAllActiveWallets(), getSelectedCurrency()]);
+async function fetchWalletSettingsData(showArchivedWallets: boolean) {
+  const [activeWallets, selectedCurrency, archivedWallets] = await Promise.all([
+    getAllActiveWallets(),
+    getSelectedCurrency(),
+    showArchivedWallets ? getAllArchivedWallets() : Promise.resolve([]),
+  ]);
+
+  return { activeWallets, selectedCurrency, archivedWallets };
 }
 
 export function WalletManagementScreen() {
   const { showToast } = useToast();
   const [wallets, setWallets] = useState<WalletItem[]>([]);
+  const [archivedWallets, setArchivedWallets] = useState<WalletItem[]>([]);
+  const [showArchivedWallets, setShowArchivedWallets] = useState(false);
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
   const [currencySymbol, setCurrencySymbol] = useState('$');
   const [isLoading, setIsLoading] = useState(true);
@@ -70,9 +80,11 @@ export function WalletManagementScreen() {
   const refreshData = async () => {
     setIsLoading(true);
     try {
-      const [activeWallets, selectedCurrency] = await fetchWalletSettingsData();
+      const { activeWallets, selectedCurrency, archivedWallets: fetchedArchivedWallets } =
+        await fetchWalletSettingsData(showArchivedWallets);
 
       setWallets(activeWallets);
+      setArchivedWallets(fetchedArchivedWallets);
       setCurrencyCode(selectedCurrency ?? 'USD');
       setCurrencySymbol(selectedCurrency ? getCurrencySymbol(selectedCurrency) : '$');
     } finally {
@@ -87,12 +99,14 @@ export function WalletManagementScreen() {
       const loadOnFocus = async () => {
         setIsLoading(true);
         try {
-          const [activeWallets, selectedCurrency] = await fetchWalletSettingsData();
+          const { activeWallets, selectedCurrency, archivedWallets: fetchedArchivedWallets } =
+            await fetchWalletSettingsData(showArchivedWallets);
           if (!isMounted) {
             return;
           }
 
           setWallets(activeWallets);
+          setArchivedWallets(fetchedArchivedWallets);
           setCurrencyCode(selectedCurrency ?? 'USD');
           setCurrencySymbol(selectedCurrency ? getCurrencySymbol(selectedCurrency) : '$');
         } finally {
@@ -106,7 +120,7 @@ export function WalletManagementScreen() {
       return () => {
         isMounted = false;
       };
-    }, [])
+    }, [showArchivedWallets])
   );
 
   const openCreateWalletModal = () => {
@@ -230,6 +244,13 @@ export function WalletManagementScreen() {
           <ThemedText style={styles.createWalletButtonText}>Add wallet</ThemedText>
         </Pressable>
       </ThemedView>
+      <ThemedView style={styles.archivedToggleRow}>
+        <ThemedText>Show archived wallets</ThemedText>
+        <Switch
+          onValueChange={setShowArchivedWallets}
+          value={showArchivedWallets}
+        />
+      </ThemedView>
 
       {isLoading ? (
         <ThemedView style={styles.loadingContainer}>
@@ -242,41 +263,76 @@ export function WalletManagementScreen() {
           ) : (
             wallets.map((wallet) => (
               <ThemedView key={wallet.id} style={styles.walletCard}>
-                <ThemedView style={styles.walletInfoRow}>
-                  <ThemedView style={styles.walletIconCircle}>
-                    <MaterialIcons
-                      color="#0a7ea4"
-                      name={getWalletMaterialIconName(wallet.iconKey)}
-                      size={20}
-                    />
+                <ThemedView style={styles.walletTopRow}>
+                  <ThemedView style={styles.walletInfoRow}>
+                    <ThemedView style={styles.walletIconCircle}>
+                      <MaterialIcons
+                        color="#0a7ea4"
+                        name={getWalletMaterialIconName(wallet.iconKey)}
+                        size={20}
+                      />
+                    </ThemedView>
+                    <ThemedView>
+                      <ThemedText type="defaultSemiBold">{wallet.name}</ThemedText>
+                      <ThemedText style={styles.balanceText}>
+                        {formatMinorUnits(wallet.initialBalance, currencySymbol, currencyFractionDigits)}
+                      </ThemedText>
+                    </ThemedView>
                   </ThemedView>
-                  <ThemedView>
-                    <ThemedText type="defaultSemiBold">{wallet.name}</ThemedText>
-                    <ThemedText style={styles.balanceText}>
-                      {formatMinorUnits(wallet.initialBalance, currencySymbol, currencyFractionDigits)}
-                    </ThemedText>
-                  </ThemedView>
-                </ThemedView>
 
-                <ThemedView style={styles.walletActionsRow}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => openEditWalletModal(wallet)}
-                    style={styles.secondaryActionButton}
-                  >
-                    <ThemedText style={styles.secondaryActionText}>Edit</ThemedText>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => onArchiveWallet(wallet)}
-                    style={styles.archiveActionButton}
-                  >
-                    <ThemedText style={styles.archiveActionText}>Archive</ThemedText>
-                  </Pressable>
+                  <ThemedView style={styles.walletActionsRow}>
+                    <Pressable
+                      accessibilityLabel={`Edit ${wallet.name}`}
+                      accessibilityRole="button"
+                      onPress={() => openEditWalletModal(wallet)}
+                      style={styles.iconActionButton}
+                    >
+                      <MaterialIcons color="#5c5c5c" name="edit" size={20} />
+                    </Pressable>
+                    <Pressable
+                      accessibilityLabel={`Archive ${wallet.name}`}
+                      accessibilityRole="button"
+                      onPress={() => onArchiveWallet(wallet)}
+                      style={styles.iconActionButton}
+                    >
+                      <MaterialIcons color="#c0392b" name="delete" size={20} />
+                    </Pressable>
+                  </ThemedView>
                 </ThemedView>
               </ThemedView>
             ))
           )}
+
+          {showArchivedWallets ? (
+            <ThemedView style={styles.archivedSection}>
+              <ThemedText type="defaultSemiBold">Archived wallets</ThemedText>
+              {archivedWallets.length === 0 ? (
+                <ThemedText style={styles.emptyStateText}>No archived wallets.</ThemedText>
+              ) : (
+                archivedWallets.map((wallet) => (
+                  <ThemedView key={wallet.id} style={styles.archivedWalletCard}>
+                    <ThemedView style={styles.walletInfoRow}>
+                      <ThemedView style={styles.walletIconCircle}>
+                        <MaterialIcons
+                          color="#7a7a7a"
+                          name={getWalletMaterialIconName(wallet.iconKey)}
+                          size={20}
+                        />
+                      </ThemedView>
+                      <ThemedView>
+                        <ThemedText style={styles.archivedWalletName} type="defaultSemiBold">
+                          {wallet.name}
+                        </ThemedText>
+                        <ThemedText style={styles.balanceText}>
+                          {formatMinorUnits(wallet.initialBalance, currencySymbol, currencyFractionDigits)}
+                        </ThemedText>
+                      </ThemedView>
+                    </ThemedView>
+                  </ThemedView>
+                ))
+              )}
+            </ThemedView>
+          ) : null}
         </ScrollView>
       )}
 
@@ -401,6 +457,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '600',
   },
+  archivedToggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -416,7 +477,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#cfcfcf',
     padding: 14,
-    gap: 12,
+  },
+  walletTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   walletInfoRow: {
     flexDirection: 'row',
@@ -438,27 +503,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  secondaryActionButton: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#bfbfbf',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  secondaryActionText: {
-    fontWeight: '600',
-  },
-  archiveActionButton: {
-    borderRadius: 10,
-    backgroundColor: '#c0392b',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  archiveActionText: {
-    color: '#ffffff',
-    fontWeight: '600',
+  iconActionButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f2f2f2',
   },
   emptyStateText: {
+    opacity: 0.72,
+  },
+  archivedSection: {
+    marginTop: 8,
+    gap: 8,
+  },
+  archivedWalletCard: {
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#d4d4d4',
+    padding: 14,
+  },
+  archivedWalletName: {
     opacity: 0.72,
   },
   modalOverlay: {

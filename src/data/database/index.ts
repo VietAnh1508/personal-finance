@@ -190,6 +190,20 @@ export async function getActiveWallets(): Promise<WalletRow[]> {
   return result;
 }
 
+export async function getArchivedWallets(): Promise<WalletRow[]> {
+  const db = await getDatabase();
+  const result = await db.getAllAsync<WalletRow>(
+    `
+      SELECT id, name, initialBalance, iconKey, archivedAt
+      FROM wallets
+      WHERE archivedAt IS NOT NULL
+      ORDER BY archivedAt DESC;
+    `
+  );
+
+  return result;
+}
+
 export async function getSelectedWalletContext(): Promise<string | null> {
   const db = await getDatabase();
   const result = await db.getFirstAsync<AppStateRow>(

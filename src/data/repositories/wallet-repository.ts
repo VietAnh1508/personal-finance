@@ -2,6 +2,7 @@ import {
   archiveWallet,
   getActiveWalletCount,
   getActiveWallets,
+  getArchivedWallets,
   getFirstActiveWallet,
   getSelectedWalletContext,
   insertWallet,
@@ -56,6 +57,17 @@ export async function getDefaultActiveWallet(): Promise<ActiveWallet | null> {
 
 export async function listActiveWallets(): Promise<ActiveWallet[]> {
   const wallets = await getActiveWallets();
+
+  return wallets.map((wallet) => ({
+    id: wallet.id,
+    name: wallet.name,
+    initialBalance: wallet.initialBalance,
+    iconKey: isSupportedWalletIconKey(wallet.iconKey) ? wallet.iconKey : 'wallet',
+  }));
+}
+
+export async function listArchivedWallets(): Promise<ActiveWallet[]> {
+  const wallets = await getArchivedWallets();
 
   return wallets.map((wallet) => ({
     id: wallet.id,

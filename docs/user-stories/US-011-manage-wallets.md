@@ -10,3 +10,4 @@ so that historical data stays consistent.
 2. Archiving a wallet excludes it from `All Wallets` unified list and combined balance.
 3. Archived wallets cannot be selected for new transfers.
 4. If last used wallet becomes archived, app defaults to `All Wallets` on launch.
+5. Wallet management screen hides archived wallets by default and provides a toggle to show archived wallets.
