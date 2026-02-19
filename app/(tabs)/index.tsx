@@ -3,16 +3,20 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet } from 'react-native';
 
+import { TransactionEntry } from '@/data/repositories';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CurrencyCode, getCurrencyFractionDigits, getCurrencySymbol } from '@/domain/currency';
 import {
   getAllActiveWallets,
+  getSignedTransactionAmount,
+  getTransactionsForWalletContext,
   getLastUsedWalletContext,
   getSelectedCurrency,
   setLastUsedWalletContext,
 } from '@/domain/services';
 import { WalletIconKey, getWalletMaterialIconName } from '@/domain/wallet-icon';
+import { formatIsoDateForDisplay } from '@/utils/date-format';
 import { formatMinorUnits } from '@/utils/money-format';
 
 type WalletContextValue = 'all' | string;
@@ -21,6 +25,7 @@ export default function TransactionsScreen() {
   const [wallets, setWallets] = useState<
     { id: string; name: string; initialBalance: number; iconKey: WalletIconKey }[]
   >([]);
+  const [transactions, setTransactions] = useState<TransactionEntry[]>([]);
   const [selectedContext, setSelectedContext] = useState<WalletContextValue>('all');
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
   const [currencySymbol, setCurrencySymbol] = useState('$');
@@ -32,14 +37,36 @@ export default function TransactionsScreen() {
     () => wallets.find((wallet) => wallet.id === selectedContext) ?? null,
     [selectedContext, wallets]
   );
-  const displayedTotalMinorUnits = useMemo(() => {
-    if (selectedContext === 'all') {
-      return wallets.reduce((total, wallet) => total + wallet.initialBalance, 0);
+  const netByWalletId = useMemo(() => {
+    const netMap: Record<string, number> = {};
+    for (const transaction of transactions) {
+      const signedAmount = getSignedTransactionAmount(transaction);
+      netMap[transaction.walletId] = (netMap[transaction.walletId] ?? 0) + signedAmount;
     }
 
-    return selectedWallet?.initialBalance ?? 0;
-  }, [selectedContext, selectedWallet, wallets]);
-  const selectorIconName = selectedContext === 'all' ? 'account-balance' : getWalletMaterialIconName(selectedWallet?.iconKey ?? 'wallet');
+    return netMap;
+  }, [transactions]);
+  const visibleTransactions = useMemo(() => {
+    if (selectedContext === 'all') {
+      return transactions;
+    }
+
+    return transactions.filter((transaction) => transaction.walletId === selectedContext);
+  }, [selectedContext, transactions]);
+  const displayedTotalMinorUnits = useMemo(() => {
+    if (selectedContext === 'all') {
+      return wallets.reduce(
+        (total, wallet) => total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0),
+        0
+      );
+    }
+
+    return (selectedWallet?.initialBalance ?? 0) + (selectedWallet ? netByWalletId[selectedWallet.id] ?? 0 : 0);
+  }, [netByWalletId, selectedContext, selectedWallet, wallets]);
+  const selectorIconName =
+    selectedContext === 'all'
+      ? 'account-balance'
+      : getWalletMaterialIconName(selectedWallet?.iconKey ?? 'wallet');
   const currencyFractionDigits = useMemo(
     () => getCurrencyFractionDigits(currencyCode),
     [currencyCode]
@@ -56,6 +83,7 @@ export default function TransactionsScreen() {
             getSelectedCurrency(),
             getLastUsedWalletContext(),
           ]);
+          const allTransactions = await getTransactionsForWalletContext('all');
 
           const normalizedContext =
             lastUsedWalletContext && activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
@@ -70,6 +98,7 @@ export default function TransactionsScreen() {
 
           if (isMounted) {
             setWallets(activeWallets);
+            setTransactions(allTransactions);
             setCurrencyCode(selectedCurrency ?? 'USD');
             setCurrencySymbol(selectedCurrency ? getCurrencySymbol(selectedCurrency) : '$');
             setSelectedContext(normalizedContext);
@@ -142,8 +171,34 @@ export default function TransactionsScreen() {
           </ThemedView>
 
           <ThemedText style={styles.subtitle}>
-            Transactions list will be added in upcoming stories.
+            {visibleTransactions.length === 0 ? 'No transactions yet.' : 'Recent transactions'}
           </ThemedText>
+          {visibleTransactions.map((transaction) => {
+            const signedAmount = getSignedTransactionAmount(transaction);
+            const amountColor = signedAmount < 0 ? '#c0392b' : '#1f8b4c';
+
+            return (
+              <ThemedView key={transaction.id} style={styles.transactionCard}>
+                <ThemedView style={styles.transactionPrimaryRow}>
+                  <ThemedText type="defaultSemiBold">{transaction.category}</ThemedText>
+                  <ThemedText style={[styles.transactionAmount, { color: amountColor }]}>
+                    {formatMinorUnits(signedAmount, currencySymbol, currencyFractionDigits)}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedView style={styles.transactionMetaRow}>
+                  <ThemedText style={styles.transactionMetaText}>
+                    {transaction.type === 'income' ? 'Income' : 'Expense'}
+                  </ThemedText>
+                  <ThemedText style={styles.transactionMetaText}>
+                    {formatIsoDateForDisplay(transaction.date)}
+                  </ThemedText>
+                </ThemedView>
+                {transaction.note ? (
+                  <ThemedText style={styles.transactionNoteText}>{transaction.note}</ThemedText>
+                ) : null}
+              </ThemedView>
+            );
+          })}
         </ThemedView>
       )}
 
@@ -249,6 +304,34 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     opacity: 0.8,
+  },
+  transactionCard: {
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#d8d8d8',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  transactionPrimaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  transactionAmount: {
+    fontWeight: '600',
+  },
+  transactionMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  transactionMetaText: {
+    opacity: 0.75,
+  },
+  transactionNoteText: {
+    opacity: 0.85,
   },
   iconButton: {
     width: 36,

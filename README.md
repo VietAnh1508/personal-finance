@@ -73,6 +73,12 @@ pnpm web
 2. Ensure the code is selectable where currency preferences are set.
 3. Do not add screen-level `if (currency === ...)` logic for formatting; rely on metadata helpers.
 
+## Date Format Convention
+
+- Persist transaction dates in ISO format: `YYYY-MM-DD`.
+- Render dates in UI as `DD/MM/YYYY` (current app-wide default).
+- Reuse shared helpers in `src/utils/date-format.ts` instead of screen-specific parsing/formatting.
+
 ## Toast Feedback
 
 - A custom app-wide toast system is implemented in `src/components/ui/toast-provider.tsx`.

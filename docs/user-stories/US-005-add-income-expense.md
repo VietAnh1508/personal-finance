@@ -11,3 +11,4 @@ so that common transaction entry is quick.
 3. Amount must be positive.
 4. Save creates a transaction with type `income` or `expense`.
 5. On success, app returns and updates transaction list and totals.
+6. If Transactions context is a specific wallet, `AddTransactionScreen` preselects that wallet.

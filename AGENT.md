@@ -22,6 +22,9 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
    - Center: total for selected context
    - Right: menu actions (`Transfer`, `Adjust balance`)
 8. Center Add button opens Income/Expense flow only.
+9. Date convention:
+   - Persist as ISO `YYYY-MM-DD`
+   - Display as `DD/MM/YYYY` in UI
 
 ## Planning & Delivery Workflow
 1. Read the relevant user story file in `docs/user-stories/` before coding.
@@ -44,6 +47,7 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
 6. Prefer small, testable changes scoped to one story at a time.
 7. Search and reuse existing code before creating new abstractions; avoid duplicate implementations.
 8. Keep component files small and focused; ideally one component per file.
+9. Avoid premature optimization hooks (`useMemo`, `useCallback`, `memo`); only use them when there is a measured performance issue or clear referential-stability requirement.
 
 ## Code Change Rules
 1. Do not introduce unrelated refactors while implementing a story.
@@ -55,4 +59,4 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
 - Story acceptance criteria are satisfied.
 - Code compiles and relevant tests pass.
 - `docs/PROGRESS.md` updated.
-- Any needed doc clarifications are committed with the change.`
+- Any needed doc clarifications are committed with the change.

@@ -17,6 +17,18 @@ type WalletRow = {
   archivedAt: string | null;
 };
 
+type TransactionRow = {
+  id: string;
+  type: string;
+  walletId: string;
+  amount: number;
+  category: string;
+  date: string;
+  note: string | null;
+  transferId: string | null;
+  createdAt: string;
+};
+
 const DB_NAME = 'personal-finance.db';
 const DEFAULT_PREFERENCE_ID = 'default';
 const DEFAULT_APP_STATE_ID = 'default';
@@ -48,6 +60,20 @@ async function initializeDatabase(db: SQLiteDatabase) {
       selectedWalletContext TEXT,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS transactions (
+      id TEXT PRIMARY KEY NOT NULL,
+      type TEXT NOT NULL,
+      walletId TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      date TEXT NOT NULL,
+      note TEXT,
+      transferId TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      FOREIGN KEY (walletId) REFERENCES wallets(id)
     );
   `);
 
@@ -235,9 +261,64 @@ export async function upsertSelectedWalletContext(selectedWalletContext: string)
   );
 }
 
+export async function insertTransaction(params: {
+  id: string;
+  type: string;
+  walletId: string;
+  amount: number;
+  category: string;
+  date: string;
+  note: string | null;
+  transferId: string | null;
+}): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+
+  await db.runAsync(
+    `
+      INSERT INTO transactions (id, type, walletId, amount, category, date, note, transferId, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `,
+    [
+      params.id,
+      params.type,
+      params.walletId,
+      params.amount,
+      params.category,
+      params.date,
+      params.note,
+      params.transferId,
+      nowIso,
+      nowIso,
+    ]
+  );
+}
+
+export async function getTransactionsByWalletIds(walletIds: string[]): Promise<TransactionRow[]> {
+  if (walletIds.length === 0) {
+    return [];
+  }
+
+  const db = await getDatabase();
+  const placeholders = walletIds.map(() => '?').join(', ');
+
+  const result = await db.getAllAsync<TransactionRow>(
+    `
+      SELECT id, type, walletId, amount, category, date, note, transferId, createdAt
+      FROM transactions
+      WHERE walletId IN (${placeholders})
+      ORDER BY date DESC, createdAt DESC;
+    `,
+    walletIds
+  );
+
+  return result;
+}
+
 export async function clearAppData(): Promise<void> {
   const db = await getDatabase();
   await db.execAsync(`
+    DELETE FROM transactions;
     DELETE FROM wallets;
     DELETE FROM user_preferences;
     DELETE FROM app_state;

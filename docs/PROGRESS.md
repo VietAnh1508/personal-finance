@@ -15,7 +15,7 @@
 - [x] US-002 Create first wallet
 - [x] US-003 Transactions top bar context
 - [ ] US-004 Switch wallet context
-- [ ] US-005 Add income/expense
+- [x] US-005 Add income/expense
 - [ ] US-006 Wallet preselection across add screens
 - [ ] US-007 Create transfer
 - [ ] US-008 Create adjustment

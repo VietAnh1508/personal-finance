@@ -110,6 +110,8 @@ Rules:
 Rules:
 - Amount is always positive.
 - Transaction type determines balance effect.
+- Date storage format is ISO `YYYY-MM-DD` (for deterministic sorting/filtering).
+- Date display format in UI is `DD/MM/YYYY` (current default for MVP).
 
 ### 4.2 Indexes
 
