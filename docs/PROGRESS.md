@@ -14,7 +14,7 @@
 - [x] US-001 Select currency on first launch
 - [x] US-002 Create first wallet
 - [x] US-003 Transactions top bar context
-- [ ] US-004 Switch wallet context
+- [x] US-004 Switch wallet context
 - [x] US-005 Add income/expense
 - [ ] US-006 Wallet preselection across add screens
 - [ ] US-007 Create transfer

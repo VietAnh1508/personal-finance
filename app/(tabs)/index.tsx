@@ -75,20 +75,14 @@ export default function TransactionsScreen() {
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const selectedWallet = useMemo(
-    () => wallets.find((wallet) => wallet.id === selectedContext) ?? null,
-    [selectedContext, wallets],
-  );
-  const netByWalletId = useMemo(() => {
-    const netMap: Record<string, number> = {};
-    for (const transaction of transactions) {
-      const signedAmount = getSignedTransactionAmount(transaction);
-      netMap[transaction.walletId] =
-        (netMap[transaction.walletId] ?? 0) + signedAmount;
-    }
-
-    return netMap;
-  }, [transactions]);
+  const selectedWallet =
+    wallets.find((wallet) => wallet.id === selectedContext) ?? null;
+  const netByWalletId: Record<string, number> = {};
+  for (const transaction of transactions) {
+    const signedAmount = getSignedTransactionAmount(transaction);
+    netByWalletId[transaction.walletId] =
+      (netByWalletId[transaction.walletId] ?? 0) + signedAmount;
+  }
   const visibleTransactions = useMemo(() => {
     if (selectedContext === "all") {
       return transactions;
@@ -123,28 +117,22 @@ export default function TransactionsScreen() {
 
     return Array.from(sectionsByDate.values());
   }, [visibleTransactions]);
-  const displayedTotalMinorUnits = useMemo(() => {
-    if (selectedContext === "all") {
-      return wallets.reduce(
-        (total, wallet) =>
-          total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0),
-        0,
-      );
-    }
-
-    return (
-      (selectedWallet?.initialBalance ?? 0) +
-      (selectedWallet ? (netByWalletId[selectedWallet.id] ?? 0) : 0)
-    );
-  }, [netByWalletId, selectedContext, selectedWallet, wallets]);
+  const displayedTotalMinorUnits =
+    selectedContext === "all"
+      ? wallets.reduce(
+          (total, wallet) =>
+            total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0),
+          0,
+        )
+      : (selectedWallet?.initialBalance ?? 0) +
+        (selectedWallet ? (netByWalletId[selectedWallet.id] ?? 0) : 0);
   const selectorIconName =
     selectedContext === "all"
       ? "account-balance"
       : getWalletMaterialIconName(selectedWallet?.iconKey ?? "wallet");
-  const currencyFractionDigits = useMemo(
-    () => getCurrencyFractionDigits(currencyCode),
-    [currencyCode],
-  );
+  const selectedContextLabel =
+    selectedContext === "all" ? "All Wallets" : (selectedWallet?.name ?? "Wallet");
+  const currencyFractionDigits = getCurrencyFractionDigits(currencyCode);
 
   useFocusEffect(
     useCallback(() => {
@@ -248,13 +236,18 @@ export default function TransactionsScreen() {
               />
             </Pressable>
 
-            <ThemedText style={styles.totalText} type="defaultSemiBold">
-              {formatMinorUnits(
-                displayedTotalMinorUnits,
-                currencySymbol,
-                currencyFractionDigits,
-              )}
-            </ThemedText>
+            <ThemedView style={styles.totalContainer}>
+              <ThemedText style={styles.selectedContextText}>
+                {selectedContextLabel}
+              </ThemedText>
+              <ThemedText style={styles.totalText} type="defaultSemiBold">
+                {formatMinorUnits(
+                  displayedTotalMinorUnits,
+                  currencySymbol,
+                  currencyFractionDigits,
+                )}
+              </ThemedText>
+            </ThemedView>
 
             <Pressable
               accessibilityLabel="Open actions menu"
@@ -569,6 +562,16 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontSize: 22,
+  },
+  totalContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+  },
+  selectedContextText: {
+    fontSize: 12,
+    lineHeight: 16,
+    opacity: 0.7,
   },
   walletMenuOverlay: {
     flex: 1,
