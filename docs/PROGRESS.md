@@ -21,7 +21,7 @@
 - [ ] US-008 Create adjustment
 - [ ] US-009 Edit/delete transactions
 - [ ] US-010 Manage categories
-- [ ] US-011 Manage wallets with archiving
+- [x] US-011 Manage wallets with archiving
 - [ ] US-012 Reports summary
 - [ ] US-013 Future-dated transaction rules
 - [ ] US-014 Currency change no-conversion warning

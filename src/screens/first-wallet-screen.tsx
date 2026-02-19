@@ -13,52 +13,13 @@ import {
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { createWallet } from "@/domain/services";
+import { createWallet, setLastUsedWalletContext } from "@/domain/services";
 import {
   getWalletMaterialIconName,
   WALLET_ICON_OPTIONS,
   WalletIconKey,
 } from "@/domain/wallet-icon";
-
-function parseAmountToMinorUnits(input: string): number | null {
-  const normalized = input.trim().replace(/,/g, "");
-  if (!normalized) {
-    return 0;
-  }
-
-  if (!/^-?\d+(\.\d{0,2})?$/.test(normalized)) {
-    return null;
-  }
-
-  const numericValue = Number(normalized);
-  if (!Number.isFinite(numericValue)) {
-    return null;
-  }
-
-  return Math.round(numericValue * 100);
-}
-
-function formatAmountInput(rawInput: string): string {
-  const normalized = rawInput.replace(/,/g, "");
-  if (!normalized) {
-    return "";
-  }
-
-  const sign = normalized.startsWith("-") ? "-" : "";
-  const unsigned = sign ? normalized.slice(1) : normalized;
-  const [integerPart = "", decimalPart] = unsigned.split(".");
-  const normalizedInteger = integerPart.replace(/^0+(?=\d)/, "");
-  const groupedInteger = normalizedInteger.replace(
-    /\B(?=(\d{3})+(?!\d))/g,
-    ",",
-  );
-
-  if (decimalPart !== undefined) {
-    return `${sign}${groupedInteger || "0"}.${decimalPart}`;
-  }
-
-  return `${sign}${groupedInteger}`;
-}
+import { formatAmountInput, parseAmountToMinorUnits } from "@/utils/money-format";
 
 export function FirstWalletScreen() {
   const router = useRouter();
@@ -85,7 +46,12 @@ export function FirstWalletScreen() {
     try {
       setIsSaving(true);
       setErrorMessage(null);
-      await createWallet(walletName, parsedInitialBalance, selectedIconKey);
+      const wallet = await createWallet(
+        walletName,
+        parsedInitialBalance,
+        selectedIconKey,
+      );
+      await setLastUsedWalletContext(wallet.id);
       router.replace("/(tabs)");
     } catch {
       setErrorMessage("Unable to create wallet. Please try again.");

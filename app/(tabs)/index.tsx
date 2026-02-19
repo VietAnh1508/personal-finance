@@ -6,21 +6,16 @@ import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet } from 'react-na
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CurrencyCode, getCurrencyFractionDigits, getCurrencySymbol } from '@/domain/currency';
-import { getAllActiveWallets, getSelectedCurrency } from '@/domain/services';
+import {
+  getAllActiveWallets,
+  getLastUsedWalletContext,
+  getSelectedCurrency,
+  setLastUsedWalletContext,
+} from '@/domain/services';
 import { WalletIconKey, getWalletMaterialIconName } from '@/domain/wallet-icon';
+import { formatMinorUnits } from '@/utils/money-format';
 
 type WalletContextValue = 'all' | string;
-
-function formatMinorUnits(amount: number, currencySymbol: string, fractionDigits: number): string {
-  const isNegative = amount < 0;
-  const absoluteAmount = Math.abs(amount);
-  const majorUnits = (absoluteAmount / 100).toLocaleString(undefined, {
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  });
-
-  return `${isNegative ? '-' : ''}${currencySymbol}${majorUnits}`;
-}
 
 export default function TransactionsScreen() {
   const [wallets, setWallets] = useState<
@@ -56,27 +51,28 @@ export default function TransactionsScreen() {
 
       const loadContextData = async () => {
         try {
-          const [activeWallets, selectedCurrency] = await Promise.all([
+          const [activeWallets, selectedCurrency, lastUsedWalletContext] = await Promise.all([
             getAllActiveWallets(),
             getSelectedCurrency(),
+            getLastUsedWalletContext(),
           ]);
+
+          const normalizedContext =
+            lastUsedWalletContext && activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
+              ? lastUsedWalletContext
+              : 'all';
+
+          if (normalizedContext !== lastUsedWalletContext) {
+            setLastUsedWalletContext(normalizedContext).catch(() => {
+              // Ignore persistence errors and keep UI responsive.
+            });
+          }
 
           if (isMounted) {
             setWallets(activeWallets);
             setCurrencyCode(selectedCurrency ?? 'USD');
             setCurrencySymbol(selectedCurrency ? getCurrencySymbol(selectedCurrency) : '$');
-            setSelectedContext((previousContext) => {
-              if (previousContext === 'all') {
-                return 'all';
-              }
-
-              const stillExists = activeWallets.some((wallet) => wallet.id === previousContext);
-              if (stillExists) {
-                return previousContext;
-              }
-
-              return activeWallets[0]?.id ?? 'all';
-            });
+            setSelectedContext(normalizedContext);
           }
         } finally {
           if (isMounted) {
@@ -97,10 +93,18 @@ export default function TransactionsScreen() {
   const onSelectWalletContext = (context: WalletContextValue) => {
     setSelectedContext(context);
     setIsWalletSelectorOpen(false);
+    setLastUsedWalletContext(context).catch(() => {
+      // Ignore persistence errors and keep UI responsive.
+    });
   };
 
   const onOpenAction = (actionLabel: 'Transfer' | 'Adjust balance') => {
     setIsActionsMenuOpen(false);
+    if (actionLabel === 'Transfer' && wallets.length < 2) {
+      Alert.alert('Transfer unavailable', 'At least two active wallets are required.');
+      return;
+    }
+
     Alert.alert(actionLabel, `${actionLabel} will be added in upcoming stories.`);
   };
 
@@ -117,9 +121,10 @@ export default function TransactionsScreen() {
               accessibilityLabel="Select wallet context"
               accessibilityRole="button"
               onPress={() => setIsWalletSelectorOpen(true)}
-              style={styles.iconButton}
+              style={[styles.iconButton, styles.walletSelectorButton]}
             >
               <MaterialIcons color="#5c5c5c" name={selectorIconName} size={20} />
+              <MaterialIcons color="#5c5c5c" name="keyboard-arrow-down" size={16} />
             </Pressable>
 
             <ThemedText style={styles.totalText} type="defaultSemiBold">
@@ -251,6 +256,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
+  },
+  walletSelectorButton: {
+    width: 'auto',
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    gap: 2,
   },
   totalText: {
     fontSize: 22,

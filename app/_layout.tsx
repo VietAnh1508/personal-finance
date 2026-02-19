@@ -22,6 +22,10 @@ export default function RootLayout() {
         />
         <Stack.Screen name="first-wallet" options={{ title: 'Wallet Setup', headerBackVisible: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="settings/wallets"
+          options={{ title: 'Wallets', headerBackButtonDisplayMode: 'minimal' }}
+        />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />

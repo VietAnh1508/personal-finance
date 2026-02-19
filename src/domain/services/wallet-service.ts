@@ -1,8 +1,12 @@
 import {
   ActiveWallet,
+  archiveActiveWallet,
+  editWallet,
   getDefaultActiveWallet,
+  getLastSelectedWalletContext,
   hasActiveWallet,
   listActiveWallets,
+  saveLastSelectedWalletContext,
   saveWallet,
 } from '@/data/repositories';
 import { WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
@@ -50,4 +54,46 @@ export async function createWallet(
 
   await saveWallet(wallet);
   return wallet;
+}
+
+export async function updateWalletDetails(
+  walletId: string,
+  name: string,
+  iconKey: WalletIconKey
+): Promise<void> {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    throw new Error('Wallet name is required');
+  }
+
+  if (!isSupportedWalletIconKey(iconKey)) {
+    throw new Error('Unsupported wallet icon');
+  }
+
+  await editWallet({
+    id: walletId,
+    name: trimmedName,
+    iconKey,
+  });
+}
+
+export async function archiveWallet(walletId: string): Promise<void> {
+  if (!walletId.trim()) {
+    throw new Error('Wallet id is required');
+  }
+
+  await archiveActiveWallet(walletId);
+}
+
+export async function getLastUsedWalletContext(): Promise<string | null> {
+  return getLastSelectedWalletContext();
+}
+
+export async function setLastUsedWalletContext(context: 'all' | string): Promise<void> {
+  const normalizedContext = context.trim();
+  if (!normalizedContext) {
+    throw new Error('Wallet context is required');
+  }
+
+  await saveLastSelectedWalletContext(normalizedContext);
 }

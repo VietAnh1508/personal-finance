@@ -5,6 +5,10 @@ type CurrencyPreferenceRow = {
   currencySymbol: string;
 };
 
+type AppStateRow = {
+  selectedWalletContext: string | null;
+};
+
 type WalletRow = {
   id: string;
   name: string;
@@ -15,6 +19,7 @@ type WalletRow = {
 
 const DB_NAME = 'personal-finance.db';
 const DEFAULT_PREFERENCE_ID = 'default';
+const DEFAULT_APP_STATE_ID = 'default';
 
 let databasePromise: Promise<SQLiteDatabase> | null = null;
 
@@ -34,6 +39,13 @@ async function initializeDatabase(db: SQLiteDatabase) {
       initialBalance INTEGER NOT NULL,
       iconKey TEXT NOT NULL DEFAULT 'wallet',
       archivedAt TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS app_state (
+      id TEXT PRIMARY KEY NOT NULL,
+      selectedWalletContext TEXT,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
@@ -108,6 +120,34 @@ export async function insertWallet(params: {
   );
 }
 
+export async function updateWallet(params: { id: string; name: string; iconKey: string }): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+
+  await db.runAsync(
+    `
+      UPDATE wallets
+      SET name = ?, iconKey = ?, updatedAt = ?
+      WHERE id = ? AND archivedAt IS NULL;
+    `,
+    [params.name, params.iconKey, nowIso, params.id]
+  );
+}
+
+export async function archiveWallet(params: { id: string }): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+
+  await db.runAsync(
+    `
+      UPDATE wallets
+      SET archivedAt = ?, updatedAt = ?
+      WHERE id = ? AND archivedAt IS NULL;
+    `,
+    [nowIso, nowIso, params.id]
+  );
+}
+
 export async function getActiveWalletCount(): Promise<number> {
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ count: number }>(
@@ -150,10 +190,42 @@ export async function getActiveWallets(): Promise<WalletRow[]> {
   return result;
 }
 
+export async function getSelectedWalletContext(): Promise<string | null> {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<AppStateRow>(
+    `
+      SELECT selectedWalletContext
+      FROM app_state
+      WHERE id = ?
+      LIMIT 1;
+    `,
+    [DEFAULT_APP_STATE_ID]
+  );
+
+  return result?.selectedWalletContext ?? null;
+}
+
+export async function upsertSelectedWalletContext(selectedWalletContext: string): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+
+  await db.runAsync(
+    `
+      INSERT INTO app_state (id, selectedWalletContext, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        selectedWalletContext = excluded.selectedWalletContext,
+        updatedAt = excluded.updatedAt;
+    `,
+    [DEFAULT_APP_STATE_ID, selectedWalletContext, nowIso, nowIso]
+  );
+}
+
 export async function clearAppData(): Promise<void> {
   const db = await getDatabase();
   await db.execAsync(`
     DELETE FROM wallets;
     DELETE FROM user_preferences;
+    DELETE FROM app_state;
   `);
 }

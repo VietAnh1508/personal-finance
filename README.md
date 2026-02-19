@@ -83,7 +83,8 @@ pnpm web
 - Purpose: testing first-launch and onboarding flows repeatedly during early stories.
 - Remove when: we ship production-ready Settings management for wallets/currency (or before release build hardening).
 - Files/components tied to this temporary flow:
-  - `app/(tabs)/settings.tsx` (`Reset local data (dev)` button guarded by `__DEV__`)
+  - `src/components/dev/reset-local-data-button.tsx` (`Reset local data (dev)` UI, state, and callback; guarded by `__DEV__`)
+  - `app/(tabs)/settings.tsx` (temporary integration point via `<ResetLocalDataButton />`)
   - `src/domain/services/app-maintenance-service.ts`
   - `src/data/repositories/app-data-repository.ts`
   - `src/data/database/index.ts` (`clearAppData` function)

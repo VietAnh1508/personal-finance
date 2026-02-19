@@ -1,4 +1,13 @@
-import { getActiveWalletCount, getActiveWallets, getFirstActiveWallet, insertWallet } from '@/data/database';
+import {
+  archiveWallet,
+  getActiveWalletCount,
+  getActiveWallets,
+  getFirstActiveWallet,
+  getSelectedWalletContext,
+  insertWallet,
+  updateWallet,
+  upsertSelectedWalletContext,
+} from '@/data/database';
 import { WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
 
 export type ActiveWallet = {
@@ -10,6 +19,18 @@ export type ActiveWallet = {
 
 export async function saveWallet(params: ActiveWallet): Promise<void> {
   await insertWallet(params);
+}
+
+export async function editWallet(params: {
+  id: string;
+  name: string;
+  iconKey: WalletIconKey;
+}): Promise<void> {
+  await updateWallet(params);
+}
+
+export async function archiveActiveWallet(walletId: string): Promise<void> {
+  await archiveWallet({ id: walletId });
 }
 
 export async function hasActiveWallet(): Promise<boolean> {
@@ -42,4 +63,12 @@ export async function listActiveWallets(): Promise<ActiveWallet[]> {
     initialBalance: wallet.initialBalance,
     iconKey: isSupportedWalletIconKey(wallet.iconKey) ? wallet.iconKey : 'wallet',
   }));
+}
+
+export async function getLastSelectedWalletContext(): Promise<string | null> {
+  return getSelectedWalletContext();
+}
+
+export async function saveLastSelectedWalletContext(context: string): Promise<void> {
+  await upsertSelectedWalletContext(context);
 }
