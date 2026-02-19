@@ -2,6 +2,30 @@
 
 Offline-first personal finance app for iOS built with Expo and React Native.
 
+## Project Structure
+
+```text
+.
+|-- app/                         # Expo Router routes/layouts
+|   |-- (tabs)/                  # Main tab screens
+|   |-- transactions/            # Transaction routes (e.g. add)
+|   `-- settings/                # Settings routes
+|-- src/
+|   |-- components/              # Reusable UI + dev-only widgets
+|   |-- constants/               # App constants/theme tokens
+|   |-- data/
+|   |   |-- database/            # SQLite setup + model DB operators
+|   |   `-- repositories/        # Data mapping between DB and domain
+|   |-- domain/
+|   |   |-- services/            # Business use-cases and validation
+|   |   `-- *.ts                 # Domain models/enums/helpers
+|   |-- screens/                 # Feature screen implementations
+|   `-- utils/                   # Shared formatting/parsing helpers
+|-- docs/                        # Product plan, architecture, progress
+|-- AGENT.md                     # Agent/collaboration instructions
+`-- README.md                    # Setup + developer overview
+```
+
 ## Package Manager
 
 Use `pnpm` only.

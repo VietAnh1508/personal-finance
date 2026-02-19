@@ -1,33 +1,26 @@
 import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
 
-type CurrencyPreferenceRow = {
-  currencyCode: string;
-  currencySymbol: string;
-};
-
-type AppStateRow = {
-  selectedWalletContext: string | null;
-};
-
-type WalletRow = {
-  id: string;
-  name: string;
-  initialBalance: number;
-  iconKey: string;
-  archivedAt: string | null;
-};
-
-type TransactionRow = {
-  id: string;
-  type: string;
-  walletId: string;
-  amount: number;
-  category: string;
-  date: string;
-  note: string | null;
-  transferId: string | null;
-  createdAt: string;
-};
+import {
+  CurrencyPreferenceRow,
+  getStoredCurrencyPreferenceRow,
+  upsertCurrencyPreferenceRow,
+} from './currency-preference-operations';
+import { getSelectedWalletContextRow, upsertSelectedWalletContextRow } from './app-state-operations';
+import {
+  archiveWalletRow,
+  getActiveWalletCountRow,
+  getActiveWalletRows,
+  getArchivedWalletRows,
+  getFirstActiveWalletRow,
+  insertWalletRow,
+  updateWalletRow,
+  WalletRow,
+} from './wallet-operations';
+import {
+  getTransactionsByWalletIdsRows,
+  insertTransactionRow,
+  TransactionRow,
+} from './transaction-operations';
 
 const DB_NAME = 'personal-finance.db';
 const DEFAULT_PREFERENCE_ID = 'default';
@@ -98,34 +91,13 @@ export async function getDatabase(): Promise<SQLiteDatabase> {
 
 export async function getStoredCurrencyPreference(): Promise<CurrencyPreferenceRow | null> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<CurrencyPreferenceRow>(
-    `
-      SELECT currencyCode, currencySymbol
-      FROM user_preferences
-      WHERE id = ?
-      LIMIT 1;
-    `,
-    [DEFAULT_PREFERENCE_ID]
-  );
-
-  return result ?? null;
+  return getStoredCurrencyPreferenceRow(db, DEFAULT_PREFERENCE_ID);
 }
 
 export async function upsertCurrencyPreference(params: CurrencyPreferenceRow): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      INSERT INTO user_preferences (id, currencyCode, currencySymbol, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        currencyCode = excluded.currencyCode,
-        currencySymbol = excluded.currencySymbol,
-        updatedAt = excluded.updatedAt;
-    `,
-    [DEFAULT_PREFERENCE_ID, params.currencyCode, params.currencySymbol, nowIso, nowIso]
-  );
+  await upsertCurrencyPreferenceRow(db, params, DEFAULT_PREFERENCE_ID, nowIso);
 }
 
 export async function insertWallet(params: {
@@ -136,129 +108,50 @@ export async function insertWallet(params: {
 }): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      INSERT INTO wallets (id, name, initialBalance, iconKey, archivedAt, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, NULL, ?, ?);
-    `,
-    [params.id, params.name, params.initialBalance, params.iconKey, nowIso, nowIso]
-  );
+  await insertWalletRow(db, params, nowIso);
 }
 
 export async function updateWallet(params: { id: string; name: string; iconKey: string }): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      UPDATE wallets
-      SET name = ?, iconKey = ?, updatedAt = ?
-      WHERE id = ? AND archivedAt IS NULL;
-    `,
-    [params.name, params.iconKey, nowIso, params.id]
-  );
+  await updateWalletRow(db, params, nowIso);
 }
 
 export async function archiveWallet(params: { id: string }): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      UPDATE wallets
-      SET archivedAt = ?, updatedAt = ?
-      WHERE id = ? AND archivedAt IS NULL;
-    `,
-    [nowIso, nowIso, params.id]
-  );
+  await archiveWalletRow(db, params, nowIso);
 }
 
 export async function getActiveWalletCount(): Promise<number> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<{ count: number }>(
-    `
-      SELECT COUNT(*) AS count
-      FROM wallets
-      WHERE archivedAt IS NULL;
-    `
-  );
-
-  return result?.count ?? 0;
+  return getActiveWalletCountRow(db);
 }
 
 export async function getFirstActiveWallet(): Promise<WalletRow | null> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<WalletRow>(
-    `
-      SELECT id, name, initialBalance, iconKey, archivedAt
-      FROM wallets
-      WHERE archivedAt IS NULL
-      ORDER BY createdAt ASC
-      LIMIT 1;
-    `
-  );
-
-  return result ?? null;
+  return getFirstActiveWalletRow(db);
 }
 
 export async function getActiveWallets(): Promise<WalletRow[]> {
   const db = await getDatabase();
-  const result = await db.getAllAsync<WalletRow>(
-    `
-      SELECT id, name, initialBalance, iconKey, archivedAt
-      FROM wallets
-      WHERE archivedAt IS NULL
-      ORDER BY createdAt ASC;
-    `
-  );
-
-  return result;
+  return getActiveWalletRows(db);
 }
 
 export async function getArchivedWallets(): Promise<WalletRow[]> {
   const db = await getDatabase();
-  const result = await db.getAllAsync<WalletRow>(
-    `
-      SELECT id, name, initialBalance, iconKey, archivedAt
-      FROM wallets
-      WHERE archivedAt IS NOT NULL
-      ORDER BY archivedAt DESC;
-    `
-  );
-
-  return result;
+  return getArchivedWalletRows(db);
 }
 
 export async function getSelectedWalletContext(): Promise<string | null> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<AppStateRow>(
-    `
-      SELECT selectedWalletContext
-      FROM app_state
-      WHERE id = ?
-      LIMIT 1;
-    `,
-    [DEFAULT_APP_STATE_ID]
-  );
-
-  return result?.selectedWalletContext ?? null;
+  return getSelectedWalletContextRow(db, DEFAULT_APP_STATE_ID);
 }
 
 export async function upsertSelectedWalletContext(selectedWalletContext: string): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      INSERT INTO app_state (id, selectedWalletContext, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        selectedWalletContext = excluded.selectedWalletContext,
-        updatedAt = excluded.updatedAt;
-    `,
-    [DEFAULT_APP_STATE_ID, selectedWalletContext, nowIso, nowIso]
-  );
+  await upsertSelectedWalletContextRow(db, DEFAULT_APP_STATE_ID, selectedWalletContext, nowIso);
 }
 
 export async function insertTransaction(params: {
@@ -273,46 +166,12 @@ export async function insertTransaction(params: {
 }): Promise<void> {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
-
-  await db.runAsync(
-    `
-      INSERT INTO transactions (id, type, walletId, amount, category, date, note, transferId, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `,
-    [
-      params.id,
-      params.type,
-      params.walletId,
-      params.amount,
-      params.category,
-      params.date,
-      params.note,
-      params.transferId,
-      nowIso,
-      nowIso,
-    ]
-  );
+  await insertTransactionRow(db, params, nowIso);
 }
 
 export async function getTransactionsByWalletIds(walletIds: string[]): Promise<TransactionRow[]> {
-  if (walletIds.length === 0) {
-    return [];
-  }
-
   const db = await getDatabase();
-  const placeholders = walletIds.map(() => '?').join(', ');
-
-  const result = await db.getAllAsync<TransactionRow>(
-    `
-      SELECT id, type, walletId, amount, category, date, note, transferId, createdAt
-      FROM transactions
-      WHERE walletId IN (${placeholders})
-      ORDER BY date DESC, createdAt DESC;
-    `,
-    walletIds
-  );
-
-  return result;
+  return getTransactionsByWalletIdsRows(db, walletIds);
 }
 
 export async function clearAppData(): Promise<void> {
