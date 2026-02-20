@@ -10,7 +10,7 @@
 - Establish React SPA + PWA migration foundation and track parity against current mobile MVP.
 
 ## Web Migration User Stories
-- [ ] US-WEB-000 Set up React SPA baseline (Vite + TypeScript + Tailwind)
+- [x] US-WEB-000 Set up React SPA baseline (Vite + TypeScript + Tailwind)
 - [ ] US-WEB-001 Set up routing shell for migration flows
 - [ ] US-WEB-002 Port domain models and shared utilities
 - [ ] US-WEB-003 Implement local-first data layer with Dexie
@@ -27,3 +27,5 @@
 - Existing `docs/PROGRESS.md` remains the historical RN/Expo MVP tracker.
 - Web migration stories are tracked separately to avoid mixing delivery contexts.
 - Use `US-WEB-*` prefix for all migration stories under `docs/user-stories/`.
+- `US-WEB-000` scaffolded under `web/` with Vite + React + TypeScript + Tailwind, plus lint/typecheck/test scripts and setup guide.
+- Local command validation is blocked in this environment until `web` dependencies can be installed from npm registry.
