@@ -75,9 +75,17 @@ pnpm start -- --dev-client
 ```bash
 pnpm lint
 pnpm typecheck
+pnpm test
+pnpm test:watch
 pnpm ios
 pnpm web
 ```
+
+## Testing
+
+- Test runner: Jest (`jest-expo`)
+- Component testing: React Native Testing Library
+- Setup docs: `docs/TESTING.md`
 
 ## Currency Display Setup
 

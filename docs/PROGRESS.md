@@ -27,7 +27,7 @@
 - [ ] US-014 Currency change no-conversion warning
 - [x] US-015 Action feedback with toast notifications
 - [x] US-016 Group transactions by date on Transactions screen
-- [ ] US-017 Set up automated test infrastructure
+- [x] US-017 Set up automated test infrastructure
 
 ## Notes
 - Update status as each story starts/completes.
