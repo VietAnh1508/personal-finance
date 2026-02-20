@@ -28,9 +28,16 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
 
 ## Planning & Delivery Workflow
 1. Read the relevant user story file in `docs/user-stories/` before coding.
-2. Update `docs/PROGRESS.md` status when starting/completing a story.
-3. Keep implementation aligned with both product and technical docs.
-4. If docs conflict, do not guess silently:
+2. Follow TDD by default for each story:
+   - analyze acceptance criteria,
+   - write tests first,
+   - implement the feature,
+   - make tests pass (green).
+3. If TDD is not feasible for a specific case, implement first, then add tests immediately after implementation.
+4. Add enough tests to cover all happy paths and critical edge cases for every story.
+5. Update `docs/PROGRESS.md` status when starting/completing a story.
+6. Keep implementation aligned with both product and technical docs.
+7. If docs conflict, do not guess silently:
    - prefer product plan intent,
    - propose doc updates,
    - then implement.
