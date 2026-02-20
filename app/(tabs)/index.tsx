@@ -1,5 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -58,6 +58,7 @@ function formatSignedMinorUnits(
 }
 
 export default function TransactionsScreen() {
+  const router = useRouter();
   const [wallets, setWallets] = useState<
     {
       id: string;
@@ -203,10 +204,12 @@ export default function TransactionsScreen() {
       return;
     }
 
-    Alert.alert(
-      actionLabel,
-      `${actionLabel} will be added in upcoming stories.`,
-    );
+    if (actionLabel === "Transfer") {
+      router.push("/transactions/transfer");
+      return;
+    }
+
+    Alert.alert(actionLabel, `${actionLabel} will be added in upcoming stories.`);
   };
 
   return (

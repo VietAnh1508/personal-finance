@@ -18,6 +18,7 @@ import {
 } from './wallet-operations';
 import {
   getTransactionsByWalletIdsRows,
+  insertTransferPairRows,
   insertTransactionRow,
   TransactionRow,
 } from './transaction-operations';
@@ -172,6 +173,31 @@ export async function insertTransaction(params: {
 export async function getTransactionsByWalletIds(walletIds: string[]): Promise<TransactionRow[]> {
   const db = await getDatabase();
   return getTransactionsByWalletIdsRows(db, walletIds);
+}
+
+export async function insertTransferPair(params: {
+  outflow: {
+    id: string;
+    walletId: string;
+    amount: number;
+    category: string;
+    date: string;
+    note: string | null;
+    transferId: string;
+  };
+  inflow: {
+    id: string;
+    walletId: string;
+    amount: number;
+    category: string;
+    date: string;
+    note: string | null;
+    transferId: string;
+  };
+}): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+  await insertTransferPairRows(db, params, nowIso);
 }
 
 export async function clearAppData(): Promise<void> {

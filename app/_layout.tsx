@@ -32,6 +32,10 @@ export default function RootLayout() {
             name="transactions/add"
             options={{ title: 'Add Transaction', headerBackButtonDisplayMode: 'minimal' }}
           />
+          <Stack.Screen
+            name="transactions/transfer"
+            options={{ title: 'Transfer', headerBackButtonDisplayMode: 'minimal' }}
+          />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="auto" />

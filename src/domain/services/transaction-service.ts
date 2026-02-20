@@ -1,4 +1,9 @@
-import { listTransactionsByWalletIds, saveTransaction, TransactionEntry } from '@/data/repositories';
+import {
+  listTransactionsByWalletIds,
+  saveTransaction,
+  saveTransferTransactions,
+  TransactionEntry,
+} from '@/data/repositories';
 import { IncomeExpenseTransactionType } from '@/domain/transaction-type';
 import { getAllActiveWallets } from '@/domain/services/wallet-service';
 import { isIsoDate } from '@/utils/date-format';
@@ -12,8 +17,20 @@ export type AddIncomeExpenseInput = {
   note?: string;
 };
 
+export type AddTransferInput = {
+  fromWalletId: string;
+  toWalletId: string;
+  amount: number;
+  date: string;
+  note?: string;
+};
+
 function generateTransactionId(): string {
   return `txn_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function generateTransferId(): string {
+  return `trf_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function getSignedTransactionAmount(transaction: Pick<TransactionEntry, 'type' | 'amount'>): number {
@@ -58,6 +75,62 @@ export async function createIncomeExpenseTransaction(input: AddIncomeExpenseInpu
     date: normalizedDate,
     note: normalizedNote,
     transferId: null,
+  });
+}
+
+export async function createTransferTransaction(input: AddTransferInput): Promise<void> {
+  const fromWalletId = input.fromWalletId.trim();
+  const toWalletId = input.toWalletId.trim();
+
+  if (!fromWalletId) {
+    throw new Error('From wallet is required');
+  }
+
+  if (!toWalletId) {
+    throw new Error('To wallet is required');
+  }
+
+  if (fromWalletId === toWalletId) {
+    throw new Error('From wallet and to wallet must be different');
+  }
+
+  if (input.amount <= 0 || !Number.isInteger(input.amount)) {
+    throw new Error('Amount must be a positive integer in minor units');
+  }
+
+  const normalizedDate = input.date.trim();
+  if (!isIsoDate(normalizedDate)) {
+    throw new Error('Date must be in YYYY-MM-DD format');
+  }
+
+  const normalizedNote = input.note?.trim() ? input.note.trim() : null;
+  const activeWallets = await getAllActiveWallets();
+  const activeWalletIds = new Set(activeWallets.map((wallet) => wallet.id));
+  if (!activeWalletIds.has(fromWalletId) || !activeWalletIds.has(toWalletId)) {
+    throw new Error('Archived wallets cannot be used for transfers');
+  }
+
+  const transferId = generateTransferId();
+
+  await saveTransferTransactions({
+    outflow: {
+      id: generateTransactionId(),
+      walletId: fromWalletId,
+      amount: input.amount,
+      category: 'Transfer',
+      date: normalizedDate,
+      note: normalizedNote,
+      transferId,
+    },
+    inflow: {
+      id: generateTransactionId(),
+      walletId: toWalletId,
+      amount: input.amount,
+      category: 'Transfer',
+      date: normalizedDate,
+      note: normalizedNote,
+      transferId,
+    },
   });
 }
 

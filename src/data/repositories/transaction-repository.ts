@@ -1,4 +1,4 @@
-import { getTransactionsByWalletIds, insertTransaction } from '@/data/database';
+import { getTransactionsByWalletIds, insertTransaction, insertTransferPair } from '@/data/database';
 import {
   DEFAULT_TRANSACTION_TYPE,
   isTransactionType,
@@ -38,4 +38,30 @@ export async function listTransactionsByWalletIds(walletIds: string[]): Promise<
     transferId: row.transferId,
     createdAt: row.createdAt,
   }));
+}
+
+export async function saveTransferTransactions(params: {
+  outflow: Omit<TransactionEntry, 'type' | 'createdAt' | 'transferId'> & { transferId: string };
+  inflow: Omit<TransactionEntry, 'type' | 'createdAt' | 'transferId'> & { transferId: string };
+}): Promise<void> {
+  await insertTransferPair({
+    outflow: {
+      id: params.outflow.id,
+      walletId: params.outflow.walletId,
+      amount: params.outflow.amount,
+      category: params.outflow.category,
+      date: params.outflow.date,
+      note: params.outflow.note,
+      transferId: params.outflow.transferId,
+    },
+    inflow: {
+      id: params.inflow.id,
+      walletId: params.inflow.walletId,
+      amount: params.inflow.amount,
+      category: params.inflow.category,
+      date: params.inflow.date,
+      note: params.inflow.note,
+      transferId: params.inflow.transferId,
+    },
+  });
 }
