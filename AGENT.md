@@ -48,6 +48,7 @@ Treat `docs/PRODUCT_PLAN.md` as product source of truth.
 7. Search and reuse existing code before creating new abstractions; avoid duplicate implementations.
 8. Keep component files small and focused; ideally one component per file.
 9. Avoid premature optimization hooks (`useMemo`, `useCallback`, `memo`); only use them when there is a measured performance issue or clear referential-stability requirement.
+10. When running shell commands against paths containing parentheses (for example `app/(tabs)/index.tsx`), quote the path (for example `'app/(tabs)/index.tsx'`) to avoid zsh globbing errors.
 
 ## Code Change Rules
 1. Do not introduce unrelated refactors while implementing a story.
