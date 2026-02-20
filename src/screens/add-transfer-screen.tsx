@@ -30,7 +30,11 @@ import {
   parseIsoDate,
   todayIsoDate,
 } from "@/utils/date-format";
-import { formatAmountInput, parseAmountToMinorUnits } from "@/utils/money-format";
+import {
+  formatAmountInput,
+  isValidAmountInput,
+  parseAmountToMinorUnits,
+} from "@/utils/money-format";
 
 type WalletOption = {
   id: string;
@@ -107,7 +111,7 @@ export function AddTransferScreen() {
       return;
     }
 
-    if (!/^\d*(\.\d{0,2})?$/.test(normalized)) {
+    if (!isValidAmountInput(normalized)) {
       return;
     }
 

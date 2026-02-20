@@ -1,3 +1,9 @@
+const amountInputPattern = /^\d*(\.\d{0,2})?$/;
+
+export function isValidAmountInput(input: string): boolean {
+  return amountInputPattern.test(input);
+}
+
 export function formatMinorUnits(
   amount: number,
   currencySymbol: string,

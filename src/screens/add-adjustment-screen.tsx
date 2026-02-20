@@ -16,6 +16,7 @@ import {
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { SegmentedToggle } from "@/components/ui/segmented-toggle";
 import { useToast } from "@/components/ui/toast-provider";
 import {
   createAdjustmentTransaction,
@@ -30,7 +31,11 @@ import {
   parseIsoDate,
   todayIsoDate,
 } from "@/utils/date-format";
-import { formatAmountInput, parseAmountToMinorUnits } from "@/utils/money-format";
+import {
+  formatAmountInput,
+  isValidAmountInput,
+  parseAmountToMinorUnits,
+} from "@/utils/money-format";
 
 type WalletOption = {
   id: string;
@@ -99,7 +104,7 @@ export function AddAdjustmentScreen() {
       return;
     }
 
-    if (!/^\d*(\.\d{0,2})?$/.test(normalized)) {
+    if (!isValidAmountInput(normalized)) {
       return;
     }
 
@@ -202,46 +207,14 @@ export function AddAdjustmentScreen() {
 
           <ThemedView style={styles.formSection}>
             <ThemedText type="defaultSemiBold">Direction</ThemedText>
-            <ThemedView style={styles.segmentedControl}>
-              <Pressable
-                onPress={() => setDirection("increase")}
-                style={[
-                  styles.segmentButton,
-                  direction === "increase"
-                    ? styles.segmentButtonActive
-                    : undefined,
-                ]}
-              >
-                <ThemedText
-                  style={
-                    direction === "increase"
-                      ? styles.segmentButtonActiveText
-                      : undefined
-                  }
-                >
-                  Increase
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => setDirection("decrease")}
-                style={[
-                  styles.segmentButton,
-                  direction === "decrease"
-                    ? styles.segmentButtonActive
-                    : undefined,
-                ]}
-              >
-                <ThemedText
-                  style={
-                    direction === "decrease"
-                      ? styles.segmentButtonActiveText
-                      : undefined
-                  }
-                >
-                  Decrease
-                </ThemedText>
-              </Pressable>
-            </ThemedView>
+            <SegmentedToggle
+              onChange={setDirection}
+              options={[
+                { value: "increase", label: "Increase" },
+                { value: "decrease", label: "Decrease" },
+              ]}
+              value={direction}
+            />
           </ThemedView>
 
           <ThemedView style={styles.formSection}>
@@ -413,26 +386,6 @@ const styles = StyleSheet.create({
   },
   formSection: {
     gap: 8,
-  },
-  segmentedControl: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  segmentButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    backgroundColor: "#f4f4f4",
-  },
-  segmentButtonActive: {
-    backgroundColor: "#0a7ea4",
-  },
-  segmentButtonActiveText: {
-    color: "#ffffff",
-    fontWeight: "600",
   },
   walletPickerButton: {
     borderWidth: 1,

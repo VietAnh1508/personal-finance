@@ -16,6 +16,7 @@ import {
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { SegmentedToggle } from "@/components/ui/segmented-toggle";
 import { useToast } from "@/components/ui/toast-provider";
 import {
   createIncomeExpenseTransaction,
@@ -33,6 +34,7 @@ import {
 } from "@/utils/date-format";
 import {
   formatAmountInput,
+  isValidAmountInput,
   parseAmountToMinorUnits,
 } from "@/utils/money-format";
 
@@ -107,7 +109,7 @@ export function AddTransactionScreen() {
       return;
     }
 
-    if (!/^\d*(\.\d{0,2})?$/.test(normalized)) {
+    if (!isValidAmountInput(normalized)) {
       return;
     }
 
@@ -186,46 +188,14 @@ export function AddTransactionScreen() {
 
           <ThemedView style={styles.formSection}>
             <ThemedText type="defaultSemiBold">Type</ThemedText>
-            <ThemedView style={styles.segmentedControl}>
-              <Pressable
-                onPress={() => setTransactionType("expense")}
-                style={[
-                  styles.segmentButton,
-                  transactionType === "expense"
-                    ? styles.segmentButtonActive
-                    : undefined,
-                ]}
-              >
-                <ThemedText
-                  style={
-                    transactionType === "expense"
-                      ? styles.segmentButtonActiveText
-                      : undefined
-                  }
-                >
-                  Expense
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => setTransactionType("income")}
-                style={[
-                  styles.segmentButton,
-                  transactionType === "income"
-                    ? styles.segmentButtonActive
-                    : undefined,
-                ]}
-              >
-                <ThemedText
-                  style={
-                    transactionType === "income"
-                      ? styles.segmentButtonActiveText
-                      : undefined
-                  }
-                >
-                  Income
-                </ThemedText>
-              </Pressable>
-            </ThemedView>
+            <SegmentedToggle
+              onChange={setTransactionType}
+              options={[
+                { value: "expense", label: "Expense" },
+                { value: "income", label: "Income" },
+              ]}
+              value={transactionType}
+            />
           </ThemedView>
 
           <ThemedView style={styles.formSection}>
@@ -435,26 +405,6 @@ const styles = StyleSheet.create({
   },
   formSection: {
     gap: 8,
-  },
-  segmentedControl: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  segmentButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    backgroundColor: "#f4f4f4",
-  },
-  segmentButtonActive: {
-    backgroundColor: "#0a7ea4",
-  },
-  segmentButtonActiveText: {
-    color: "#ffffff",
-    fontWeight: "600",
   },
   walletPickerButton: {
     borderWidth: 1,
