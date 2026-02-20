@@ -23,6 +23,13 @@ Current examples:
 
 - `src/utils/date-format.test.ts` (unit)
 - `src/components/ui/segmented-toggle.test.tsx` (component interaction)
+- `src/domain/services/transaction-service.test.ts` + `src/domain/services/transaction-service.mock.ts` (service fixtures)
+
+## Test Fixture Pattern
+
+- Use shared fixture factories in `*.mock.ts` files for reusable test data.
+- Prefer factory functions (e.g. `makeTransactionEntry({ ...overrides })`) over exported mutable objects.
+- In each test, override only the fields relevant to that scenario.
 
 ## Shared Setup
 

@@ -17,10 +17,16 @@ import {
   WalletRow,
 } from './wallet-operations';
 import {
+  deleteTransactionRow,
+  deleteTransferPairRows,
+  getTransactionByIdRow,
+  getTransactionsByTransferIdRows,
   getTransactionsByWalletIdsRows,
   insertTransferPairRows,
   insertTransactionRow,
   TransactionRow,
+  updateTransactionRow,
+  updateTransferPairRows,
 } from './transaction-operations';
 
 const DB_NAME = 'personal-finance.db';
@@ -175,6 +181,16 @@ export async function getTransactionsByWalletIds(walletIds: string[]): Promise<T
   return getTransactionsByWalletIdsRows(db, walletIds);
 }
 
+export async function getTransactionById(id: string): Promise<TransactionRow | null> {
+  const db = await getDatabase();
+  return getTransactionByIdRow(db, id);
+}
+
+export async function getTransactionsByTransferId(transferId: string): Promise<TransactionRow[]> {
+  const db = await getDatabase();
+  return getTransactionsByTransferIdRows(db, transferId);
+}
+
 export async function insertTransferPair(params: {
   outflow: {
     id: string;
@@ -198,6 +214,50 @@ export async function insertTransferPair(params: {
   const db = await getDatabase();
   const nowIso = new Date().toISOString();
   await insertTransferPairRows(db, params, nowIso);
+}
+
+export async function updateTransaction(params: {
+  id: string;
+  type: string;
+  walletId: string;
+  amount: number;
+  category: string;
+  date: string;
+  note: string | null;
+}): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+  await updateTransactionRow(db, params, nowIso);
+}
+
+export async function updateTransferPair(params: {
+  transferId: string;
+  outflow: {
+    walletId: string;
+    amount: number;
+    date: string;
+    note: string | null;
+  };
+  inflow: {
+    walletId: string;
+    amount: number;
+    date: string;
+    note: string | null;
+  };
+}): Promise<void> {
+  const db = await getDatabase();
+  const nowIso = new Date().toISOString();
+  await updateTransferPairRows(db, params, nowIso);
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const db = await getDatabase();
+  await deleteTransactionRow(db, id);
+}
+
+export async function deleteTransferPair(transferId: string): Promise<void> {
+  const db = await getDatabase();
+  await deleteTransferPairRows(db, transferId);
 }
 
 export async function clearAppData(): Promise<void> {

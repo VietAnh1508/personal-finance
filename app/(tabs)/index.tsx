@@ -312,8 +312,13 @@ export default function TransactionsScreen() {
                       signedAmount < 0 ? "#c0392b" : "#1f8b4c";
 
                     return (
-                      <ThemedView
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Open ${transaction.category} transaction`}
                         key={transaction.id}
+                        onPress={() =>
+                          router.push(`/transactions/${transaction.id}` as never)
+                        }
                         style={[
                           styles.transactionCard,
                           transactionIndex > 0
@@ -343,7 +348,7 @@ export default function TransactionsScreen() {
                             {transaction.note}
                           </ThemedText>
                         ) : null}
-                      </ThemedView>
+                      </Pressable>
                     );
                   })}
                 </ThemedView>
