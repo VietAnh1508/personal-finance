@@ -208,8 +208,7 @@ export default function TransactionsScreen() {
       router.push("/transactions/transfer");
       return;
     }
-
-    Alert.alert(actionLabel, `${actionLabel} will be added in upcoming stories.`);
+    router.push("/transactions/adjustment");
   };
 
   return (

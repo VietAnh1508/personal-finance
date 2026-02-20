@@ -25,6 +25,13 @@ export type AddTransferInput = {
   note?: string;
 };
 
+export type AddAdjustmentInput = {
+  walletId: string;
+  amount: number;
+  date: string;
+  note?: string;
+};
+
 function generateTransactionId(): string {
   return `txn_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -131,6 +138,35 @@ export async function createTransferTransaction(input: AddTransferInput): Promis
       note: normalizedNote,
       transferId,
     },
+  });
+}
+
+export async function createAdjustmentTransaction(input: AddAdjustmentInput): Promise<void> {
+  const walletId = input.walletId.trim();
+  if (!walletId) {
+    throw new Error('Wallet is required');
+  }
+
+  if (input.amount === 0 || !Number.isInteger(input.amount)) {
+    throw new Error('Amount must be a non-zero integer in minor units');
+  }
+
+  const normalizedDate = input.date.trim();
+  if (!isIsoDate(normalizedDate)) {
+    throw new Error('Date must be in YYYY-MM-DD format');
+  }
+
+  const normalizedNote = input.note?.trim() ? input.note.trim() : null;
+
+  await saveTransaction({
+    id: generateTransactionId(),
+    type: 'adjustment',
+    walletId,
+    amount: input.amount,
+    category: 'Adjustment',
+    date: normalizedDate,
+    note: normalizedNote,
+    transferId: null,
   });
 }
 

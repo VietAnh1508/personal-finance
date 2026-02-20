@@ -18,7 +18,7 @@
 - [x] US-005 Add income/expense
 - [ ] US-006 Wallet preselection across add screens
 - [x] US-007 Create transfer
-- [ ] US-008 Create adjustment
+- [x] US-008 Create adjustment
 - [ ] US-009 Edit/delete transactions
 - [ ] US-010 Manage categories
 - [x] US-011 Manage wallets with archiving
