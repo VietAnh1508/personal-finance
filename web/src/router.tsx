@@ -2,6 +2,7 @@ import { createBrowserRouter, createMemoryRouter, Link, Outlet, type RouteObject
 import { CurrencyOnboardingPage } from './features/onboarding/CurrencyOnboardingPage';
 import { FirstWalletOnboardingPage } from './features/onboarding/FirstWalletOnboardingPage';
 import { OnboardingGatePage } from './features/onboarding/OnboardingGatePage';
+import { TransactionsPage } from './features/transactions/TransactionsPage';
 
 type PlaceholderPageProps = {
   heading: string;
@@ -134,12 +135,7 @@ export const routeConfig: RouteObject[] = [
     children: [
       {
         path: '/transactions',
-        element: (
-          <PlaceholderPage
-            heading="Transactions Route"
-            description="Placeholder screen for the transactions list and wallet context top bar."
-          />
-        ),
+        element: <TransactionsPage />,
       },
       {
         path: '/transactions/add',

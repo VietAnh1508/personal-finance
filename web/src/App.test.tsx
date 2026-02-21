@@ -67,7 +67,7 @@ describe('onboarding routing flow', () => {
 
     renderWithProviders('/');
 
-    expect(await screen.findByRole('heading', { name: 'Transactions Route' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
   });
 
   it('persists selected currency and moves to wallet setup', async () => {
@@ -89,7 +89,7 @@ describe('onboarding routing flow', () => {
     fireEvent.change(screen.getByLabelText('Initial balance'), { target: { value: '1000.50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Create wallet' }));
 
-    expect(await screen.findByRole('heading', { name: 'Transactions Route' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
 
     const wallets = await listActiveWallets();
     expect(wallets).toHaveLength(1);

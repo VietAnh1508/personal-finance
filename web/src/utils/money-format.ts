@@ -19,6 +19,19 @@ export function formatMinorUnits(
   return `${isNegative ? '-' : ''}${currencySymbol}${majorUnits}`;
 }
 
+export function formatSignedMinorUnits(
+  amount: number,
+  currencySymbol: string,
+  fractionDigits: number
+): string {
+  if (amount === 0) {
+    return formatMinorUnits(0, currencySymbol, fractionDigits);
+  }
+
+  const sign = amount > 0 ? '+' : '-';
+  return `${sign}${formatMinorUnits(Math.abs(amount), currencySymbol, fractionDigits)}`;
+}
+
 export function parseAmountToMinorUnits(input: string): number | null {
   const normalized = input.trim().replace(/,/g, '');
   if (!normalized) {

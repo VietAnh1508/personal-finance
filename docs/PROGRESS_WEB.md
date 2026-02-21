@@ -15,7 +15,7 @@
 - [x] US-WEB-002 Port domain models and shared utilities
 - [x] US-WEB-003 Implement local-first data layer with Dexie
 - [x] US-WEB-004 Port wallet setup and currency onboarding flows
-- [ ] US-WEB-005 Port transactions list and wallet context behavior
+- [x] US-WEB-005 Port transactions list and wallet context behavior
 - [ ] US-WEB-006 Port add income/expense flow (web form + date input)
 - [ ] US-WEB-007 Port transfer and adjustment flows
 - [ ] US-WEB-008 Port transaction detail edit/delete flow
