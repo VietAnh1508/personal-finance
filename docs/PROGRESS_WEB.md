@@ -13,7 +13,7 @@
 - [x] US-WEB-000 Set up React SPA baseline (Vite + TypeScript + Tailwind)
 - [x] US-WEB-001 Set up routing shell for migration flows
 - [x] US-WEB-002 Port domain models and shared utilities
-- [ ] US-WEB-003 Implement local-first data layer with Dexie
+- [x] US-WEB-003 Implement local-first data layer with Dexie
 - [ ] US-WEB-004 Port wallet setup and currency onboarding flows
 - [ ] US-WEB-005 Port transactions list and wallet context behavior
 - [ ] US-WEB-006 Port add income/expense flow (web form + date input)
@@ -28,4 +28,4 @@
 - Web migration stories are tracked separately to avoid mixing delivery contexts.
 - Use `US-WEB-*` prefix for all migration stories under `docs/user-stories/`.
 - `US-WEB-000` scaffolded under `web/` with Vite + React + TypeScript + Tailwind, plus lint/typecheck/test scripts and setup guide.
-- Local command validation is blocked in this environment until `web` dependencies can be installed from npm registry.
+- `US-WEB-003` completed with Dexie-backed IndexedDB schema (`wallets`, `transactions`, `user_preferences`, `app_state`, `outbox`), repository CRUD layer, and passing web tests.
