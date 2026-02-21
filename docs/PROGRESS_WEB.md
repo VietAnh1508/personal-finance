@@ -28,7 +28,7 @@
 - [ ] US-WEB-015 Implement future-dated transaction rules in PWA
 - [ ] US-WEB-016 Implement currency change no-conversion warning in PWA
 - [ ] US-WEB-017 Port settings wallet management flow
-- [ ] US-WEB-018 Implement action feedback toast notifications
+- [-] US-WEB-018 Implement action feedback toast notifications
 
 ## Notes
 - Existing `docs/PROGRESS.md` remains the historical RN/Expo MVP tracker.
@@ -41,3 +41,4 @@
 - Frozen RN backlog from `docs/PROGRESS.md` is mapped to: `US-WEB-013` (US-010), `US-WEB-014` (US-012), `US-WEB-015` (US-013), `US-WEB-016` (US-014).
 - Additional parity carry-forward: `US-WEB-017` maps to completed RN story `US-011` (wallet management in Settings).
 - Additional parity carry-forward: `US-WEB-018` maps to completed RN story `US-015` (action feedback toast notifications).
+- Follow-up dependency: when implementing `US-WEB-008` (transaction update/delete flow), add toast success/error coverage for edit/delete actions there; and when `US-WEB-017` ships wallet update UI/actions on web, add toast success/error coverage for wallet update to fully close `US-WEB-018` acceptance criterion #3.

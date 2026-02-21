@@ -10,6 +10,7 @@ import {
 import { type IncomeExpenseTransactionType } from '../../domain/transaction-type';
 import { todayIsoDate } from '../../utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
+import { useToast } from '../feedback/ToastProvider';
 
 type WalletSummary = {
   id: string;
@@ -23,6 +24,7 @@ const CATEGORY_SUGGESTIONS: Record<IncomeExpenseTransactionType, string[]> = {
 
 export function AddIncomeExpensePage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [wallets, setWallets] = useState<WalletSummary[]>([]);
   const [walletId, setWalletId] = useState('');
   const [type, setType] = useState<IncomeExpenseTransactionType>('expense');
@@ -106,8 +108,16 @@ export function AddIncomeExpensePage() {
         note,
       });
 
+      showToast({
+        type: 'success',
+        message: 'Transaction saved.',
+      });
       navigate('/transactions');
     } catch (error) {
+      showToast({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Unable to save transaction.',
+      });
       setErrorMessage(error instanceof Error ? error.message : 'Unable to save transaction.');
     } finally {
       setIsSubmitting(false);

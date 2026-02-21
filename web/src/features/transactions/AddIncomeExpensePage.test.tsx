@@ -8,6 +8,7 @@ import {
   saveLastSelectedWalletContext,
   saveWallet,
 } from '../../data/repositories';
+import { ToastProvider } from '../feedback/ToastProvider';
 import { AddIncomeExpensePage } from './AddIncomeExpensePage';
 import { TransactionsPage } from './TransactionsPage';
 
@@ -30,7 +31,11 @@ function renderAddTransactionPage() {
     { initialEntries: ['/transactions/add'] }
   );
 
-  render(<RouterProvider router={router} />);
+  render(
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 }
 
 describe('AddIncomeExpensePage', () => {
@@ -102,6 +107,7 @@ describe('AddIncomeExpensePage', () => {
     fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-02-20' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save transaction' }));
 
+    expect(await screen.findByText('Transaction saved.')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
     expect(await screen.findByText('Food')).toBeInTheDocument();
 

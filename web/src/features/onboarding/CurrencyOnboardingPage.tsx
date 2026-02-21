@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { CURRENCY_OPTIONS, type CurrencyCode } from '../../domain/currency';
 import { selectCurrency } from '../../domain/services';
+import { useToast } from '../feedback/ToastProvider';
 import { onboardingStatusQueryKey, useOnboardingStatus } from './use-onboarding-status';
 
 export function CurrencyOnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const { isLoading, selectedCurrency, hasWallet } = useOnboardingStatus();
   const [selectedCode, setSelectedCode] = useState<CurrencyCode | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,8 +44,16 @@ export function CurrencyOnboardingPage() {
         selectedCurrency: selectedCode,
         hasWallet: false,
       });
+      showToast({
+        type: 'success',
+        message: 'Currency saved.',
+      });
       navigate('/onboarding/wallet', { replace: true });
     } catch {
+      showToast({
+        type: 'error',
+        message: 'Unable to save your currency. Please try again.',
+      });
       setErrorMessage('Unable to save your currency. Please try again.');
     } finally {
       setIsSaving(false);

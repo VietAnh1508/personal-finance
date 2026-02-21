@@ -8,6 +8,7 @@ import {
   saveLastSelectedWalletContext,
   saveWallet,
 } from '../../data/repositories';
+import { ToastProvider } from '../feedback/ToastProvider';
 import { AddAdjustmentPage } from './AddAdjustmentPage';
 import { TransactionsPage } from './TransactionsPage';
 
@@ -30,7 +31,11 @@ function renderAdjustmentPage() {
     { initialEntries: ['/transactions/adjustment'] }
   );
 
-  render(<RouterProvider router={router} />);
+  render(
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 }
 
 describe('AddAdjustmentPage', () => {
@@ -87,6 +92,7 @@ describe('AddAdjustmentPage', () => {
     fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-02-20' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save adjustment' }));
 
+    expect(await screen.findByText('Adjustment saved.')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
     expect(await screen.findByText('$90.00')).toBeInTheDocument();
     expect((await screen.findAllByText('Adjustment')).length).toBeGreaterThan(0);

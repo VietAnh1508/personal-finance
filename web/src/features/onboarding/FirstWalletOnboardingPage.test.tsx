@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { createWallet, setLastUsedWalletContext } from '../../domain/services';
+import { ToastProvider } from '../feedback/ToastProvider';
 import { FirstWalletOnboardingPage } from './FirstWalletOnboardingPage';
 import { useOnboardingStatus } from './use-onboarding-status';
 
@@ -39,7 +40,9 @@ function renderFirstWalletPage() {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
@@ -73,7 +76,27 @@ describe('FirstWalletOnboardingPage', () => {
       expect(mockCreateWallet).toHaveBeenCalledWith('Daily Cash', 100_050, 'wallet');
       expect(mockSetLastUsedWalletContext).toHaveBeenCalledWith('wallet_1');
     });
+    expect(await screen.findByText('Wallet created successfully.')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Transactions Route' })).toBeInTheDocument();
+  });
+
+  it('shows an error toast when wallet creation fails', async () => {
+    mockUseOnboardingStatus.mockReturnValue({
+      isLoading: false,
+      selectedCurrency: 'USD',
+      hasWallet: false,
+    });
+    mockCreateWallet.mockRejectedValue(new Error('create failed'));
+
+    renderFirstWalletPage();
+
+    fireEvent.change(screen.getByLabelText('Wallet name'), { target: { value: 'Daily Cash' } });
+    fireEvent.change(screen.getByLabelText('Initial balance'), { target: { value: '1000.50' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create wallet' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Unable to create wallet. Please review your values and try again.'
+    );
   });
 
   it('redirects to currency onboarding when currency is not set', async () => {

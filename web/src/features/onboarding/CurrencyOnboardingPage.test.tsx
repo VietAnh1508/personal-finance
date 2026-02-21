@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { selectCurrency } from '../../domain/services';
+import { ToastProvider } from '../feedback/ToastProvider';
 import { CurrencyOnboardingPage } from './CurrencyOnboardingPage';
 import { useOnboardingStatus } from './use-onboarding-status';
 
@@ -37,7 +38,9 @@ function renderCurrencyPage() {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
@@ -61,6 +64,7 @@ describe('CurrencyOnboardingPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(mockSelectCurrency).toHaveBeenCalledWith('USD');
+    expect(await screen.findByText('Currency saved.')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'Wallet Setup Route' })).toBeInTheDocument();
   });
 

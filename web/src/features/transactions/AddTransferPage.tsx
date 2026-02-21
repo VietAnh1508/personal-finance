@@ -9,6 +9,7 @@ import {
 } from '../../domain/services';
 import { todayIsoDate } from '../../utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
+import { useToast } from '../feedback/ToastProvider';
 
 type WalletSummary = {
   id: string;
@@ -17,6 +18,7 @@ type WalletSummary = {
 
 export function AddTransferPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [wallets, setWallets] = useState<WalletSummary[]>([]);
   const [fromWalletId, setFromWalletId] = useState('');
   const [toWalletId, setToWalletId] = useState('');
@@ -101,8 +103,16 @@ export function AddTransferPage() {
         date,
         note,
       });
+      showToast({
+        type: 'success',
+        message: 'Transfer saved.',
+      });
       navigate('/transactions');
     } catch (error) {
+      showToast({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Unable to save transfer.',
+      });
       setErrorMessage(error instanceof Error ? error.message : 'Unable to save transfer.');
     } finally {
       setIsSubmitting(false);

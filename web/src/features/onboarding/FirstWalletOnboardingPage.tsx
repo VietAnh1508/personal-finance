@@ -5,11 +5,13 @@ import { WalletIcon } from '../../components/WalletIcon';
 import { WALLET_ICON_OPTIONS, type WalletIconKey } from '../../domain/wallet-icon';
 import { createWallet, setLastUsedWalletContext } from '../../domain/services';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
+import { useToast } from '../feedback/ToastProvider';
 import { onboardingStatusQueryKey, useOnboardingStatus } from './use-onboarding-status';
 
 export function FirstWalletOnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const { isLoading, selectedCurrency, hasWallet } = useOnboardingStatus();
 
   const [walletName, setWalletName] = useState('');
@@ -60,8 +62,16 @@ export function FirstWalletOnboardingPage() {
         selectedCurrency,
         hasWallet: true,
       });
+      showToast({
+        type: 'success',
+        message: 'Wallet created successfully.',
+      });
       navigate('/transactions', { replace: true });
     } catch {
+      showToast({
+        type: 'error',
+        message: 'Unable to create wallet. Please review your values and try again.',
+      });
       setErrorMessage('Unable to create wallet. Please review your values and try again.');
     } finally {
       setIsSaving(false);
