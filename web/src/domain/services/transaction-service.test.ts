@@ -1,11 +1,11 @@
-import { closeDatabaseConnection, openDatabaseConnection } from '../../data/database';
+import { closeDatabaseConnection, openDatabaseConnection } from '@/data/database';
 import {
   archiveActiveWallet,
   listTransactionsByWalletIds,
   resetLocalAppData,
   saveWallet,
-} from '../../data/repositories';
-import { addAdjustmentTransaction, addTransferTransaction } from './transaction-service';
+} from '@/data/repositories';
+import { addAdjustmentTransaction, addTransferTransaction } from '@/domain/services/transaction-service';
 
 describe('transaction-service create transfer and adjustment', () => {
   beforeEach(async () => {

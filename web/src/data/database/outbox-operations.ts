@@ -1,4 +1,4 @@
-import { db, type OutboxRow } from './schema';
+import { db, type OutboxRow } from '@/data/database/schema';
 
 export async function enqueueOutboxRow(
   params: {

@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { WalletIcon } from '../../components/WalletIcon';
-import { WALLET_ICON_OPTIONS, type WalletIconKey } from '../../domain/wallet-icon';
-import { createWallet, setLastUsedWalletContext } from '../../domain/services';
-import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
-import { useToast } from '../feedback/ToastProvider';
-import { onboardingStatusQueryKey, useOnboardingStatus } from './use-onboarding-status';
+import { WalletIcon } from '@/components/WalletIcon';
+import { WALLET_ICON_OPTIONS, type WalletIconKey } from '@/domain/wallet-icon';
+import { createWallet, setLastUsedWalletContext } from '@/domain/services';
+import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
+import { useToast } from '@/features/feedback/ToastProvider';
+import { onboardingStatusQueryKey, useOnboardingStatus } from '@/features/onboarding/use-onboarding-status';
 
 export function FirstWalletOnboardingPage() {
   const navigate = useNavigate();

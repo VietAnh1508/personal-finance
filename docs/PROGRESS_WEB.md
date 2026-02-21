@@ -41,5 +41,6 @@
 - Frozen RN backlog from `docs/PROGRESS.md` is mapped to: `US-WEB-013` (US-010), `US-WEB-014` (US-012), `US-WEB-015` (US-013), `US-WEB-016` (US-014).
 - Additional parity carry-forward: `US-WEB-017` maps to completed RN story `US-011` (wallet management in Settings).
 - Additional parity carry-forward: `US-WEB-018` maps to completed RN story `US-015` (action feedback toast notifications).
+- Web import convention: for internal web app modules under `web/src`, prefer alias imports using `@/...` instead of relative traversal (`../` or `../../`).
 - Follow-up dependency: when implementing `US-WEB-008` (transaction update/delete flow), add toast success/error coverage for edit/delete actions there; and when `US-WEB-017` ships wallet update UI/actions on web, add toast success/error coverage for wallet update to fully close `US-WEB-018` acceptance criterion #3.
 - `US-WEB-017` completed with web wallet settings UI for create/edit/archive, archived visibility toggle, and transfer endpoint filtering tests for archived wallet exclusion.

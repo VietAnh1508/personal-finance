@@ -1,4 +1,4 @@
-import { db } from './schema';
+import { db } from '@/data/database/schema';
 
 export async function getSelectedWalletContextRow(appStateId: string): Promise<string | null> {
   const row = await db.app_state.get(appStateId);

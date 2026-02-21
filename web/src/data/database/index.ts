@@ -1,24 +1,24 @@
 import {
   getSelectedWalletContextRow,
   upsertSelectedWalletContextRow,
-} from "./app-state-operations";
+} from "@/data/database/app-state-operations";
 import {
   getStoredCurrencyPreferenceRow,
   upsertCurrencyPreferenceRow,
-} from "./currency-preference-operations";
+} from "@/data/database/currency-preference-operations";
 import {
   deleteOutboxRow,
   enqueueOutboxRow,
   listOutboxRowsByStatus,
   updateOutboxRowStatus,
-} from "./outbox-operations";
+} from "@/data/database/outbox-operations";
 import {
   db,
   type CurrencyPreferenceRow,
   type OutboxRow,
   type TransactionRow,
   type WalletRow,
-} from "./schema";
+} from "@/data/database/schema";
 import {
   deleteTransactionRow,
   deleteTransferPairRows,
@@ -29,7 +29,7 @@ import {
   insertTransferPairRows,
   updateTransactionRow,
   updateTransferPairRows,
-} from "./transaction-operations";
+} from "@/data/database/transaction-operations";
 import {
   archiveWalletRow,
   getActiveWalletCountRow,
@@ -38,7 +38,7 @@ import {
   getFirstActiveWalletRow,
   insertWalletRow,
   updateWalletRow,
-} from "./wallet-operations";
+} from "@/data/database/wallet-operations";
 
 const DEFAULT_PREFERENCE_ID = "default";
 const DEFAULT_APP_STATE_ID = "default";

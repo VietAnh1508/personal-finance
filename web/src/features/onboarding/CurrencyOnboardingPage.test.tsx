@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { selectCurrency } from '../../domain/services';
-import { ToastProvider } from '../feedback/ToastProvider';
-import { CurrencyOnboardingPage } from './CurrencyOnboardingPage';
-import { useOnboardingStatus } from './use-onboarding-status';
+import { selectCurrency } from '@/domain/services';
+import { ToastProvider } from '@/features/feedback/ToastProvider';
+import { CurrencyOnboardingPage } from '@/features/onboarding/CurrencyOnboardingPage';
+import { useOnboardingStatus } from '@/features/onboarding/use-onboarding-status';
 
 vi.mock('../../domain/services', () => ({
   selectCurrency: vi.fn(),

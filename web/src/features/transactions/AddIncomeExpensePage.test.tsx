@@ -1,16 +1,16 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { closeDatabaseConnection, openDatabaseConnection } from '../../data/database';
+import { closeDatabaseConnection, openDatabaseConnection } from '@/data/database';
 import {
   listTransactionsByWalletIds,
   resetLocalAppData,
   saveCurrencyPreference,
   saveLastSelectedWalletContext,
   saveWallet,
-} from '../../data/repositories';
-import { ToastProvider } from '../feedback/ToastProvider';
-import { AddIncomeExpensePage } from './AddIncomeExpensePage';
-import { TransactionsPage } from './TransactionsPage';
+} from '@/data/repositories';
+import { ToastProvider } from '@/features/feedback/ToastProvider';
+import { AddIncomeExpensePage } from '@/features/transactions/AddIncomeExpensePage';
+import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 function renderAddTransactionPage() {
   const router = createMemoryRouter(

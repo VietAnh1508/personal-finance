@@ -9,8 +9,8 @@ import {
   listArchivedWallets,
   saveLastSelectedWalletContext,
   saveWallet,
-} from '../../data/repositories';
-import { type WalletIconKey, isSupportedWalletIconKey } from '../wallet-icon';
+} from '@/data/repositories';
+import { type WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
 
 function generateWalletId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {

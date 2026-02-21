@@ -10,7 +10,7 @@ import {
   getWalletHeroIconName,
   type WalletHeroIconName,
   type WalletIconKey,
-} from '../domain/wallet-icon';
+} from '@/domain/wallet-icon';
 
 export type HeroIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 

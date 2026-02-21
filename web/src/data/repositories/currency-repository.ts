@@ -1,5 +1,5 @@
-import { getStoredCurrencyPreference, upsertCurrencyPreference } from '../database';
-import { type CurrencyCode, getCurrencySymbol, isSupportedCurrencyCode } from '../../domain/currency';
+import { getStoredCurrencyPreference, upsertCurrencyPreference } from '@/data/database';
+import { type CurrencyCode, getCurrencySymbol, isSupportedCurrencyCode } from '@/domain/currency';
 
 export async function getCurrencyPreference(): Promise<CurrencyCode | null> {
   const preference = await getStoredCurrencyPreference();

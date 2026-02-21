@@ -1,8 +1,8 @@
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { WalletIcon } from '../../components/WalletIcon';
-import { type CurrencyCode, getCurrencySymbol } from '../../domain/currency';
-import { WALLET_ICON_OPTIONS, type WalletIconKey } from '../../domain/wallet-icon';
+import { WalletIcon } from '@/components/WalletIcon';
+import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
+import { WALLET_ICON_OPTIONS, type WalletIconKey } from '@/domain/wallet-icon';
 import {
   archiveWallet,
   createWallet,
@@ -10,9 +10,9 @@ import {
   getAllArchivedWallets,
   getSelectedCurrency,
   updateWalletDetails,
-} from '../../domain/services';
-import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
-import { useToast } from '../feedback/ToastProvider';
+} from '@/domain/services';
+import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
+import { useToast } from '@/features/feedback/ToastProvider';
 
 type WalletSummary = {
   id: string;

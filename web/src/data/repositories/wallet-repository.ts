@@ -8,8 +8,8 @@ import {
   insertWallet,
   updateWallet,
   upsertSelectedWalletContext,
-} from '../database';
-import { type WalletIconKey, isSupportedWalletIconKey } from '../../domain/wallet-icon';
+} from '@/data/database';
+import { type WalletIconKey, isSupportedWalletIconKey } from '@/domain/wallet-icon';
 
 export type ActiveWallet = {
   id: string;

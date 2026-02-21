@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
-import type { WalletIconKey } from '../domain/wallet-icon';
-import { getWalletHeroIcon } from './wallet-icon-map';
+import type { WalletIconKey } from '@/domain/wallet-icon';
+import { getWalletHeroIcon } from '@/components/wallet-icon-map';
 
 type WalletIconProps = SVGProps<SVGSVGElement> & {
   iconKey: WalletIconKey;

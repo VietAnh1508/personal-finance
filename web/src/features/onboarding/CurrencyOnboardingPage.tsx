@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { CURRENCY_OPTIONS, type CurrencyCode } from '../../domain/currency';
-import { selectCurrency } from '../../domain/services';
-import { useToast } from '../feedback/ToastProvider';
-import { onboardingStatusQueryKey, useOnboardingStatus } from './use-onboarding-status';
+import { CURRENCY_OPTIONS, type CurrencyCode } from '@/domain/currency';
+import { selectCurrency } from '@/domain/services';
+import { useToast } from '@/features/feedback/ToastProvider';
+import { onboardingStatusQueryKey, useOnboardingStatus } from '@/features/onboarding/use-onboarding-status';
 
 export function CurrencyOnboardingPage() {
   const navigate = useNavigate();

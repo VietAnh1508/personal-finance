@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import type { CurrencyCode } from '../../domain/currency';
-import { getSelectedCurrency, hasAnyActiveWallet } from '../../domain/services';
+import type { CurrencyCode } from '@/domain/currency';
+import { getSelectedCurrency, hasAnyActiveWallet } from '@/domain/services';
 
 type OnboardingStatusData = {
   selectedCurrency: CurrencyCode | null;

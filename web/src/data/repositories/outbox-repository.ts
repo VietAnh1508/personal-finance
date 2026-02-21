@@ -3,7 +3,7 @@ import {
   listPendingOutboxOperations,
   removeOutboxOperation,
   setOutboxOperationStatus,
-} from '../database';
+} from '@/data/database';
 
 export type OutboxOperation = {
   id: string;

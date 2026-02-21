@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import {
   closeDatabaseConnection,
   openDatabaseConnection,
-} from '../../data/database';
+} from '@/data/database';
 import {
   archiveActiveWallet,
   getLastSelectedWalletContext,
@@ -12,8 +12,8 @@ import {
   saveLastSelectedWalletContext,
   saveTransaction,
   saveWallet,
-} from '../../data/repositories';
-import { TransactionsPage } from './TransactionsPage';
+} from '@/data/repositories';
+import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 function renderTransactionsPage() {
   const router = createMemoryRouter(

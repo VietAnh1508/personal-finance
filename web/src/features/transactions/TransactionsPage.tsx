@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { WalletIcon } from '../../components/WalletIcon';
-import type { TransactionEntry } from '../../data/repositories';
+import { WalletIcon } from '@/components/WalletIcon';
+import type { TransactionEntry } from '@/data/repositories';
 import {
   getAllActiveWallets,
   getLastUsedWalletContext,
@@ -9,15 +9,15 @@ import {
   getSignedTransactionAmount,
   getTransactionsForWalletContext,
   setLastUsedWalletContext,
-} from '../../domain/services';
-import { type CurrencyCode, getCurrencyFractionDigits, getCurrencySymbol } from '../../domain/currency';
-import type { WalletIconKey } from '../../domain/wallet-icon';
+} from '@/domain/services';
+import { type CurrencyCode, getCurrencyFractionDigits, getCurrencySymbol } from '@/domain/currency';
+import type { WalletIconKey } from '@/domain/wallet-icon';
 import {
   formatIsoDateDayNumber,
   formatIsoDateMonthYear,
   formatIsoDateWeekday,
-} from '../../utils/date-format';
-import { formatMinorUnits, formatSignedMinorUnits } from '../../utils/money-format';
+} from '@/utils/date-format';
+import { formatMinorUnits, formatSignedMinorUnits } from '@/utils/money-format';
 
 type WalletContextValue = 'all' | string;
 

@@ -3,10 +3,10 @@ import {
   saveTransferTransactions,
   saveTransaction,
   listTransactionsByWalletIds,
-} from '../../data/repositories';
-import { type IncomeExpenseTransactionType } from '../transaction-type';
-import { isIsoDate } from '../../utils/date-format';
-import { getAllActiveWallets } from './wallet-service';
+} from '@/data/repositories';
+import { type IncomeExpenseTransactionType } from '@/domain/transaction-type';
+import { isIsoDate } from '@/utils/date-format';
+import { getAllActiveWallets } from '@/domain/services/wallet-service';
 
 export function getSignedTransactionAmount(transaction: Pick<TransactionEntry, 'type' | 'amount'>): number {
   if (transaction.type === 'income' || transaction.type === 'transfer_in') {

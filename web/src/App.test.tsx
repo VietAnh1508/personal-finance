@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import {
   closeDatabaseConnection,
   openDatabaseConnection,
-} from './data/database';
+} from '@/data/database';
 import {
   getCurrencyPreference,
   getLastSelectedWalletContext,
@@ -12,8 +12,8 @@ import {
   resetLocalAppData,
   saveCurrencyPreference,
   saveWallet,
-} from './data/repositories';
-import { createTestRouter } from './router';
+} from '@/data/repositories';
+import { createTestRouter } from '@/router';
 
 function renderWithProviders(path: string) {
   const queryClient = new QueryClient({

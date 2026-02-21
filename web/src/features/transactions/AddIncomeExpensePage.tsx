@@ -1,16 +1,16 @@
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { type CurrencyCode, getCurrencySymbol } from '../../domain/currency';
+import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
 import {
   addIncomeExpenseTransaction,
   getAllActiveWallets,
   getLastUsedWalletContext,
   getSelectedCurrency,
-} from '../../domain/services';
-import { type IncomeExpenseTransactionType } from '../../domain/transaction-type';
-import { todayIsoDate } from '../../utils/date-format';
-import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '../../utils/money-format';
-import { useToast } from '../feedback/ToastProvider';
+} from '@/domain/services';
+import { type IncomeExpenseTransactionType } from '@/domain/transaction-type';
+import { todayIsoDate } from '@/utils/date-format';
+import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
+import { useToast } from '@/features/feedback/ToastProvider';
 
 type WalletSummary = {
   id: string;

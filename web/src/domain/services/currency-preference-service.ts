@@ -1,5 +1,5 @@
-import { getCurrencyPreference, saveCurrencyPreference } from '../../data/repositories';
-import { type CurrencyCode, isSupportedCurrencyCode } from '../currency';
+import { getCurrencyPreference, saveCurrencyPreference } from '@/data/repositories';
+import { type CurrencyCode, isSupportedCurrencyCode } from '@/domain/currency';
 
 export async function getSelectedCurrency(): Promise<CurrencyCode | null> {
   return getCurrencyPreference();

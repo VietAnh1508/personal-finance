@@ -1,13 +1,13 @@
 import { createBrowserRouter, createMemoryRouter, Link, Outlet, type RouteObject } from 'react-router-dom';
-import { CurrencyOnboardingPage } from './features/onboarding/CurrencyOnboardingPage';
-import { FirstWalletOnboardingPage } from './features/onboarding/FirstWalletOnboardingPage';
-import { OnboardingGatePage } from './features/onboarding/OnboardingGatePage';
-import { SettingsPage } from './features/settings/SettingsPage';
-import { WalletSettingsPage } from './features/settings/WalletSettingsPage';
-import { AddAdjustmentPage } from './features/transactions/AddAdjustmentPage';
-import { AddIncomeExpensePage } from './features/transactions/AddIncomeExpensePage';
-import { AddTransferPage } from './features/transactions/AddTransferPage';
-import { TransactionsPage } from './features/transactions/TransactionsPage';
+import { CurrencyOnboardingPage } from '@/features/onboarding/CurrencyOnboardingPage';
+import { FirstWalletOnboardingPage } from '@/features/onboarding/FirstWalletOnboardingPage';
+import { OnboardingGatePage } from '@/features/onboarding/OnboardingGatePage';
+import { SettingsPage } from '@/features/settings/SettingsPage';
+import { WalletSettingsPage } from '@/features/settings/WalletSettingsPage';
+import { AddAdjustmentPage } from '@/features/transactions/AddAdjustmentPage';
+import { AddIncomeExpensePage } from '@/features/transactions/AddIncomeExpensePage';
+import { AddTransferPage } from '@/features/transactions/AddTransferPage';
+import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 type PlaceholderPageProps = {
   heading: string;

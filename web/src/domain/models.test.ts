@@ -3,16 +3,16 @@ import {
   getCurrencyFractionDigits,
   getCurrencySymbol,
   isSupportedCurrencyCode,
-} from './currency';
+} from '@/domain/currency';
 import {
   DEFAULT_TRANSACTION_TYPE,
   isTransactionType,
-} from './transaction-type';
+} from '@/domain/transaction-type';
 import {
   getWalletHeroIconName,
   isSupportedWalletIconKey,
   WALLET_ICON_OPTIONS,
-} from './wallet-icon';
+} from '@/domain/wallet-icon';
 
 describe('domain models', () => {
   it('provides currency metadata for supported codes', () => {

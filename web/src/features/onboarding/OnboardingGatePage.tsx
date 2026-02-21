@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useOnboardingStatus } from './use-onboarding-status';
+import { useOnboardingStatus } from '@/features/onboarding/use-onboarding-status';
 
 export function OnboardingGatePage() {
   const { isLoading, selectedCurrency, hasWallet } = useOnboardingStatus();

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { WalletIcon } from './WalletIcon';
-import { getWalletHeroIcon } from './wallet-icon-map';
+import { WalletIcon } from '@/components/WalletIcon';
+import { getWalletHeroIcon } from '@/components/wallet-icon-map';
 
 describe('WalletIcon', () => {
   it('maps wallet icon key to heroicon component', () => {

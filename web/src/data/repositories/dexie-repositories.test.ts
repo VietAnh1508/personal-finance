@@ -17,8 +17,8 @@ import {
   listPendingOperations,
   markOperationStatus,
   resetLocalAppData,
-} from './index';
-import { closeDatabaseConnection, openDatabaseConnection } from '../database';
+} from '@/data/repositories/index';
+import { closeDatabaseConnection, openDatabaseConnection } from '@/data/database';
 
 describe('Dexie local-first repositories', () => {
   beforeEach(async () => {

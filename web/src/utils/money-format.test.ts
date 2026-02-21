@@ -3,7 +3,7 @@ import {
   formatMinorUnits,
   isValidAmountInput,
   parseAmountToMinorUnits,
-} from './money-format';
+} from '@/utils/money-format';
 
 describe('money-format utils', () => {
   it('validates amount input with up to 2 decimals', () => {

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { closeDatabaseConnection, openDatabaseConnection } from '../../data/database';
+import { closeDatabaseConnection, openDatabaseConnection } from '@/data/database';
 import {
   archiveActiveWallet,
   listActiveWallets,
@@ -8,9 +8,9 @@ import {
   resetLocalAppData,
   saveCurrencyPreference,
   saveWallet,
-} from '../../data/repositories';
-import { ToastProvider } from '../feedback/ToastProvider';
-import { WalletSettingsPage } from './WalletSettingsPage';
+} from '@/data/repositories';
+import { ToastProvider } from '@/features/feedback/ToastProvider';
+import { WalletSettingsPage } from '@/features/settings/WalletSettingsPage';
 
 function renderWalletSettingsPage() {
   const router = createMemoryRouter(

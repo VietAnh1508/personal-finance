@@ -1,4 +1,4 @@
-import { db, type TransactionRow } from './schema';
+import { db, type TransactionRow } from '@/data/database/schema';
 
 export async function insertTransactionRow(
   params: {

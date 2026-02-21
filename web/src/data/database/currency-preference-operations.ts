@@ -1,4 +1,4 @@
-import { db, type CurrencyPreferenceRow } from './schema';
+import { db, type CurrencyPreferenceRow } from '@/data/database/schema';
 
 export async function getStoredCurrencyPreferenceRow(
   preferenceId: string

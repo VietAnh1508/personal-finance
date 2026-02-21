@@ -8,12 +8,12 @@ import {
   insertTransferPair,
   updateTransaction as updateTransactionRecord,
   updateTransferPair,
-} from '../database';
+} from '@/data/database';
 import {
   DEFAULT_TRANSACTION_TYPE,
   isTransactionType,
   type TransactionType,
-} from '../../domain/transaction-type';
+} from '@/domain/transaction-type';
 
 export type TransactionEntry = {
   id: string;

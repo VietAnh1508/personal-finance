@@ -1,4 +1,4 @@
-import { db, type WalletRow } from './schema';
+import { db, type WalletRow } from '@/data/database/schema';
 
 export async function insertWalletRow(
   params: {

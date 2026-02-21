@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
-import { ToastProvider } from './features/feedback/ToastProvider';
-import { appRouter } from './router';
+import { ToastProvider } from '@/features/feedback/ToastProvider';
+import { appRouter } from '@/router';
 
 function App() {
   return (
