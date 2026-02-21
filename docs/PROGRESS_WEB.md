@@ -22,6 +22,11 @@
 - [ ] US-WEB-009 Implement backend sync API integration (outbox push/pull)
 - [ ] US-WEB-010 Enable PWA installability and offline app shell
 - [ ] US-WEB-011 Set up web test infrastructure and migration parity checks
+- [ ] US-WEB-012 Decommission React Native/Expo app and make PWA the only client
+- [ ] US-WEB-013 Implement category management in PWA
+- [ ] US-WEB-014 Implement reports summary in PWA
+- [ ] US-WEB-015 Implement future-dated transaction rules in PWA
+- [ ] US-WEB-016 Implement currency change no-conversion warning in PWA
 
 ## Notes
 - Existing `docs/PROGRESS.md` remains the historical RN/Expo MVP tracker.
@@ -29,3 +34,4 @@
 - Use `US-WEB-*` prefix for all migration stories under `docs/user-stories/`.
 - `US-WEB-000` scaffolded under `web/` with Vite + React + TypeScript + Tailwind, plus lint/typecheck/test scripts and setup guide.
 - `US-WEB-003` completed with Dexie-backed IndexedDB schema (`wallets`, `transactions`, `user_preferences`, `app_state`, `outbox`), repository CRUD layer, and passing web tests.
+- Frozen RN backlog from `docs/PROGRESS.md` is mapped to: `US-WEB-013` (US-010), `US-WEB-014` (US-012), `US-WEB-015` (US-013), `US-WEB-016` (US-014).

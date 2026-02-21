@@ -11,6 +11,8 @@ Convert the current Expo React Native app to a React SPA + PWA with:
 
 Decision: migrate in phases and reuse domain/business logic where possible. Do not rebuild everything from scratch.
 
+Frozen-but-pending features from `docs/PROGRESS.md` (US-010, US-012, US-013, US-014) are in scope for the web backlog and must be delivered in the PWA track before final decommission of RN/Expo.
+
 ---
 
 ## 2. Target Architecture
@@ -166,8 +168,23 @@ Deliverable: installable PWA with offline app shell and local data.
 2. Offline/online transition tests.
 3. Performance checks on large local datasets.
 4. Launch readiness checklist and staged rollout.
+5. Validate completion of carried-forward feature set:
+   - category management
+   - reports summary
+   - future-dated transaction rules
+   - currency change no-conversion warning
 
 Deliverable: production-ready React PWA replacement.
+
+## Phase 9: React Native/Expo Decommission
+
+1. Execute final PWA parity sign-off and production cutover checklist.
+2. Remove or archive React Native/Expo app entry points and mobile-only scripts.
+3. Remove RN/Expo-only dependencies from active manifests and lockfiles.
+4. Update CI/CD pipelines and documentation to web/PWA as the default client.
+5. Document rollback and legacy app deprecation plan.
+
+Deliverable: PWA-only codebase and delivery pipeline.
 
 ---
 
@@ -201,5 +218,6 @@ Recommended approach:
 3. Phase 4-5: UI migration with Tailwind + date handling.
 4. Phase 6: backend + sync.
 5. Phase 7-8: PWA hardening + launch.
+6. Phase 9: decommission RN/Expo and finalize PWA-only operations.
 
 This order minimizes rewrite risk and gets offline capability early.

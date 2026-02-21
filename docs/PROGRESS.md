@@ -33,6 +33,11 @@
 - Update status as each story starts/completes.
 - Add implementation links or PR references under each story as needed.
 - Package manager standard: use `pnpm` for all dependency management and scripts.
+- Frozen pending RN stories are carried into the web track in `docs/PROGRESS_WEB.md` as:
+  - US-010 -> US-WEB-013
+  - US-012 -> US-WEB-014
+  - US-013 -> US-WEB-015
+  - US-014 -> US-WEB-016
 - Temporary dev-only reset flow exists for onboarding tests; track removal before release:
   - `app/(tabs)/settings.tsx` (`Reset local data (dev)` action)
   - `src/domain/services/app-maintenance-service.ts`
