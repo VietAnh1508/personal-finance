@@ -2,6 +2,8 @@ import { createBrowserRouter, createMemoryRouter, Link, Outlet, type RouteObject
 import { CurrencyOnboardingPage } from './features/onboarding/CurrencyOnboardingPage';
 import { FirstWalletOnboardingPage } from './features/onboarding/FirstWalletOnboardingPage';
 import { OnboardingGatePage } from './features/onboarding/OnboardingGatePage';
+import { SettingsPage } from './features/settings/SettingsPage';
+import { WalletSettingsPage } from './features/settings/WalletSettingsPage';
 import { AddAdjustmentPage } from './features/transactions/AddAdjustmentPage';
 import { AddIncomeExpensePage } from './features/transactions/AddIncomeExpensePage';
 import { AddTransferPage } from './features/transactions/AddTransferPage';
@@ -158,21 +160,11 @@ export const routeConfig: RouteObject[] = [
       },
       {
         path: '/settings',
-        element: (
-          <PlaceholderPage
-            heading="Settings Route"
-            description="Placeholder screen for settings overview actions."
-          />
-        ),
+        element: <SettingsPage />,
       },
       {
         path: '/settings/wallets',
-        element: (
-          <PlaceholderPage
-            heading="Wallet Settings Route"
-            description="Placeholder screen for wallet management settings."
-          />
-        ),
+        element: <WalletSettingsPage />,
       },
     ],
   },

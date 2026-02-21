@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { closeDatabaseConnection, openDatabaseConnection } from '../../data/database';
 import {
+  archiveActiveWallet,
   listTransactionsByWalletIds,
   resetLocalAppData,
   saveCurrencyPreference,
@@ -108,5 +109,31 @@ describe('AddTransferPage', () => {
       expect(transactions.map((entry) => entry.type).sort()).toEqual(['transfer_in', 'transfer_out']);
       expect(new Set(transactions.map((entry) => entry.transferId)).size).toBe(1);
     });
+  });
+
+  it('excludes archived wallets from transfer endpoints', async () => {
+    await saveWallet({
+      id: 'wallet_active',
+      name: 'Active Wallet',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_archived',
+      name: 'Archived Wallet',
+      initialBalance: 100_00,
+      iconKey: 'cash',
+    });
+    await archiveActiveWallet('wallet_archived');
+
+    renderTransferPage();
+
+    const fromWalletSelect = await screen.findByLabelText('From wallet');
+    const toWalletSelect = await screen.findByLabelText('To wallet');
+
+    expect(fromWalletSelect).toHaveTextContent('Active Wallet');
+    expect(fromWalletSelect).not.toHaveTextContent('Archived Wallet');
+    expect(toWalletSelect).toHaveTextContent('Active Wallet');
+    expect(toWalletSelect).not.toHaveTextContent('Archived Wallet');
   });
 });
