@@ -17,7 +17,7 @@
 - [x] US-WEB-004 Port wallet setup and currency onboarding flows
 - [x] US-WEB-005 Port transactions list and wallet context behavior
 - [x] US-WEB-006 Port add income/expense flow (web form + date input)
-- [ ] US-WEB-007 Port transfer and adjustment flows
+- [x] US-WEB-007 Port transfer and adjustment flows
 - [ ] US-WEB-008 Port transaction detail edit/delete flow
 - [ ] US-WEB-009 Implement backend sync API integration (outbox push/pull)
 - [ ] US-WEB-010 Enable PWA installability and offline app shell
@@ -35,4 +35,5 @@
 - `US-WEB-000` scaffolded under `web/` with Vite + React + TypeScript + Tailwind, plus lint/typecheck/test scripts and setup guide.
 - `US-WEB-003` completed with Dexie-backed IndexedDB schema (`wallets`, `transactions`, `user_preferences`, `app_state`, `outbox`), repository CRUD layer, and passing web tests.
 - `US-WEB-006` completed with a production route for add income/expense, wallet-context preselection, positive minor-unit amount validation, and persistence verified by integration tests.
+- `US-WEB-007` completed with transfer and adjustment forms, wallet-context preselection, active-wallet/same-wallet transfer validation, paired transfer creation with shared transfer id, and green service + page integration tests.
 - Frozen RN backlog from `docs/PROGRESS.md` is mapped to: `US-WEB-013` (US-010), `US-WEB-014` (US-012), `US-WEB-015` (US-013), `US-WEB-016` (US-014).

@@ -2,7 +2,9 @@ import { createBrowserRouter, createMemoryRouter, Link, Outlet, type RouteObject
 import { CurrencyOnboardingPage } from './features/onboarding/CurrencyOnboardingPage';
 import { FirstWalletOnboardingPage } from './features/onboarding/FirstWalletOnboardingPage';
 import { OnboardingGatePage } from './features/onboarding/OnboardingGatePage';
+import { AddAdjustmentPage } from './features/transactions/AddAdjustmentPage';
 import { AddIncomeExpensePage } from './features/transactions/AddIncomeExpensePage';
+import { AddTransferPage } from './features/transactions/AddTransferPage';
 import { TransactionsPage } from './features/transactions/TransactionsPage';
 
 type PlaceholderPageProps = {
@@ -144,21 +146,11 @@ export const routeConfig: RouteObject[] = [
       },
       {
         path: '/transactions/transfer',
-        element: (
-          <PlaceholderPage
-            heading="Transfer Route"
-            description="Placeholder screen for creating transfers between wallets."
-          />
-        ),
+        element: <AddTransferPage />,
       },
       {
         path: '/transactions/adjustment',
-        element: (
-          <PlaceholderPage
-            heading="Adjustment Route"
-            description="Placeholder screen for balance adjustment transactions."
-          />
-        ),
+        element: <AddAdjustmentPage />,
       },
       {
         path: '/transactions/:id',

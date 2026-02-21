@@ -1,0 +1,106 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { closeDatabaseConnection, openDatabaseConnection } from '../../data/database';
+import {
+  listTransactionsByWalletIds,
+  resetLocalAppData,
+  saveCurrencyPreference,
+  saveLastSelectedWalletContext,
+  saveWallet,
+} from '../../data/repositories';
+import { AddTransferPage } from './AddTransferPage';
+import { TransactionsPage } from './TransactionsPage';
+
+function renderTransferPage() {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/transactions/transfer',
+        element: <AddTransferPage />,
+      },
+      {
+        path: '/transactions',
+        element: <TransactionsPage />,
+      },
+      {
+        path: '/transactions/:id',
+        element: <h1>Transaction Detail</h1>,
+      },
+    ],
+    { initialEntries: ['/transactions/transfer'] }
+  );
+
+  render(<RouterProvider router={router} />);
+}
+
+describe('AddTransferPage', () => {
+  beforeEach(async () => {
+    await openDatabaseConnection();
+    await resetLocalAppData();
+  });
+
+  afterAll(async () => {
+    await closeDatabaseConnection();
+  });
+
+  it('preselects source wallet from current wallet context', async () => {
+    await saveWallet({
+      id: 'wallet_cash',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_bank',
+      name: 'Bank',
+      initialBalance: 0,
+      iconKey: 'bank',
+    });
+    await saveLastSelectedWalletContext('wallet_cash');
+
+    renderTransferPage();
+
+    const fromWalletSelect = (await screen.findByLabelText('From wallet')) as HTMLSelectElement;
+    expect(fromWalletSelect.value).toBe('wallet_cash');
+  });
+
+  it('validates same-wallet transfer and saves linked transfer transactions', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_cash',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_bank',
+      name: 'Bank',
+      initialBalance: 20_00,
+      iconKey: 'bank',
+    });
+    await saveLastSelectedWalletContext('wallet_cash');
+
+    renderTransferPage();
+
+    fireEvent.change(await screen.findByLabelText('To wallet'), { target: { value: 'wallet_cash' } });
+    fireEvent.change(screen.getByLabelText('Amount ($)'), { target: { value: '10.00' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save transfer' }));
+
+    expect(await screen.findByText('From wallet and to wallet must be different.')).toBeInTheDocument();
+    await expect(listTransactionsByWalletIds(['wallet_cash', 'wallet_bank'])).resolves.toHaveLength(0);
+
+    fireEvent.change(screen.getByLabelText('To wallet'), { target: { value: 'wallet_bank' } });
+    fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-02-20' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save transfer' }));
+
+    expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
+    expect(await screen.findByText('$90.00')).toBeInTheDocument();
+
+    await waitFor(async () => {
+      const transactions = await listTransactionsByWalletIds(['wallet_cash', 'wallet_bank']);
+      expect(transactions).toHaveLength(2);
+      expect(transactions.map((entry) => entry.type).sort()).toEqual(['transfer_in', 'transfer_out']);
+      expect(new Set(transactions.map((entry) => entry.transferId)).size).toBe(1);
+    });
+  });
+});
