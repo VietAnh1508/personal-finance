@@ -44,6 +44,7 @@ export function TransactionsPage() {
   const [selectedContext, setSelectedContext] = useState<WalletContextValue>('all');
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currencySymbol = getCurrencySymbol(currencyCode);
   const currencyFractionDigits = getCurrencyFractionDigits(currencyCode);
@@ -74,6 +75,10 @@ export function TransactionsPage() {
           setTransactions(allTransactions);
           setCurrencyCode(selectedCurrency ?? 'USD');
           setSelectedContext(normalizedContext);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : 'Unable to load transactions.');
         }
       } finally {
         if (isMounted) {
@@ -150,6 +155,15 @@ export function TransactionsPage() {
       <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
         <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
         <p className="mt-3 text-sm text-slate-300">Loading transactions...</p>
+      </section>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Transactions</h1>
+        <p className="mt-3 text-sm text-rose-200">{errorMessage}</p>
       </section>
     );
   }
