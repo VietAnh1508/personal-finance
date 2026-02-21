@@ -211,7 +211,16 @@ Recommended approach:
 
 ---
 
-## 7. Suggested Execution Order (Sprint-Friendly)
+## 7. Migration Guardrails
+
+1. During web feature porting/migration, do not change React Native/Expo app code paths.  
+   - Treat RN app code as reference-only while implementing equivalent behavior in `web/`.
+2. Since the target is a PWA, prefer mobile-friendly UI patterns when building web components.  
+   - Design for touch interactions and small screens first, then enhance for larger breakpoints.
+
+---
+
+## 8. Suggested Execution Order (Sprint-Friendly)
 
 1. Phase 0-1: project scaffold + routes + tooling.
 2. Phase 2-3: domain reuse + Dexie repositories.
