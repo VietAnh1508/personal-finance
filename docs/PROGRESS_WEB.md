@@ -12,7 +12,7 @@
 ## Web Migration User Stories
 - [x] US-WEB-000 Set up React SPA baseline (Vite + TypeScript + Tailwind)
 - [x] US-WEB-001 Set up routing shell for migration flows
-- [ ] US-WEB-002 Port domain models and shared utilities
+- [x] US-WEB-002 Port domain models and shared utilities
 - [ ] US-WEB-003 Implement local-first data layer with Dexie
 - [ ] US-WEB-004 Port wallet setup and currency onboarding flows
 - [ ] US-WEB-005 Port transactions list and wallet context behavior
