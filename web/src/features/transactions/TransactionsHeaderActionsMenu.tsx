@@ -5,9 +5,13 @@ export type TransactionHeaderAction = 'transfer' | 'adjustment';
 
 type TransactionsHeaderActionsMenuProps = {
   onSelectAction: (action: TransactionHeaderAction) => void;
+  isTransferDisabled?: boolean;
 };
 
-export function TransactionsHeaderActionsMenu({ onSelectAction }: TransactionsHeaderActionsMenuProps) {
+export function TransactionsHeaderActionsMenu({
+  onSelectAction,
+  isTransferDisabled = false,
+}: TransactionsHeaderActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,7 +65,8 @@ export function TransactionsHeaderActionsMenu({ onSelectAction }: TransactionsHe
           role="menu">
           <button
             autoFocus
-            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-700/40"
+            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-700/40 disabled:cursor-not-allowed disabled:text-slate-500 disabled:hover:bg-transparent"
+            disabled={isTransferDisabled}
             onClick={() => onChooseAction('transfer')}
             role="menuitem"
             type="button">

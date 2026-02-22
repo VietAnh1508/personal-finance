@@ -155,4 +155,35 @@ describe('AddTransferPage', () => {
     expect(fromWalletSelect).not.toHaveTextContent('Archived Wallet');
     expect(toWalletSelect).not.toHaveTextContent('Archived Wallet');
   });
+
+  it('blocks transfer when source wallet balance is zero', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_cash',
+      name: 'Cash',
+      initialBalance: 0,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_bank',
+      name: 'Bank',
+      initialBalance: 20_00,
+      iconKey: 'bank',
+    });
+    await saveLastSelectedWalletContext('wallet_cash');
+
+    renderTransferPage();
+
+    const fromWalletSelect = (await screen.findByLabelText('From wallet')) as HTMLSelectElement;
+    await waitFor(() => {
+      expect(fromWalletSelect.value).toBe('wallet_cash');
+    });
+
+    fireEvent.change(await screen.findByLabelText('To wallet'), { target: { value: 'wallet_bank' } });
+    fireEvent.change(screen.getByLabelText('Amount ($)'), { target: { value: '10.00' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save transfer' }));
+
+    expect(await screen.findByText('From wallet balance must be greater than 0.')).toBeInTheDocument();
+    await expect(listTransactionsByWalletIds(['wallet_cash', 'wallet_bank'])).resolves.toHaveLength(0);
+  });
 });

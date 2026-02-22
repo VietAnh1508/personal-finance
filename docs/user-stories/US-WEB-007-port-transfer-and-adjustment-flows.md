@@ -11,3 +11,4 @@ so that wallet balances stay accurate for internal moves and corrections.
 3. Save creates paired transfer transactions with shared transfer id.
 4. Adjustment form supports increase/decrease direction and validation.
 5. Save updates totals and list according to existing balance rules.
+6. UI blocks transfer initiation/submission when source wallet current balance is `0` or below.

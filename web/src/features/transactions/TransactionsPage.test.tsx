@@ -236,6 +236,32 @@ describe('TransactionsPage', () => {
     expect(screen.queryByRole('heading', { name: 'Transfer Route' })).not.toBeInTheDocument();
   });
 
+  it('disables transfer action when selected wallet has zero balance', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_a',
+      name: 'Cash',
+      initialBalance: 0,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_b',
+      name: 'Bank',
+      initialBalance: 50_00,
+      iconKey: 'bank',
+    });
+    await saveLastSelectedWalletContext('wallet_a');
+
+    renderTransactionsPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Open actions menu' }));
+    const transferMenuItem = screen.getByRole('menuitem', { name: 'Transfer' });
+    expect(transferMenuItem).toBeDisabled();
+
+    fireEvent.click(transferMenuItem);
+    expect(screen.queryByRole('heading', { name: 'Transfer Route' })).not.toBeInTheDocument();
+  });
+
   it('removes inline transfer and adjustment buttons from the page body', async () => {
     await saveCurrencyPreference('USD');
     await saveWallet({

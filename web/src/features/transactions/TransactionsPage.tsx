@@ -74,7 +74,7 @@ export function TransactionsPage() {
             : 'all';
 
         if (normalizedContext !== lastUsedWalletContext) {
-          void setLastUsedWalletContext(normalizedContext);
+          void setLastUsedWalletContext(normalizedContext).catch(() => undefined);
         }
 
         if (isMounted) {
@@ -151,16 +151,27 @@ export function TransactionsPage() {
     selectedContext === 'all'
       ? wallets.reduce((total, wallet) => total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0), 0)
       : (selectedWallet?.initialBalance ?? 0) + (selectedWallet ? (netByWalletId[selectedWallet.id] ?? 0) : 0);
+  const selectedWalletCurrentBalanceMinorUnits =
+    selectedWallet ? selectedWallet.initialBalance + (netByWalletId[selectedWallet.id] ?? 0) : null;
+  const isTransferDisabledForSelectedWallet =
+    selectedContext !== 'all' &&
+    selectedWalletCurrentBalanceMinorUnits !== null &&
+    selectedWalletCurrentBalanceMinorUnits <= 0;
   const selectedContextLabel = selectedContext === 'all' ? 'All Wallets' : (selectedWallet?.name ?? 'Wallet');
 
   const onSelectWalletContext = (context: WalletContextValue) => {
     setSelectedContext(context);
-    void setLastUsedWalletContext(context);
+    void setLastUsedWalletContext(context).catch(() => undefined);
   };
 
   const onSelectHeaderAction = (action: TransactionHeaderAction) => {
     if (action === 'transfer' && wallets.length < 2) {
       setActionErrorMessage('At least two active wallets are required for transfer.');
+      return;
+    }
+
+    if (action === 'transfer' && isTransferDisabledForSelectedWallet) {
+      setActionErrorMessage('Selected wallet balance must be greater than 0 to start a transfer.');
       return;
     }
 
@@ -216,6 +227,7 @@ export function TransactionsPage() {
           </div>
 
           <TransactionsHeaderActionsMenu
+            isTransferDisabled={isTransferDisabledForSelectedWallet}
             onSelectAction={(action) => {
               setActionErrorMessage(null);
               onSelectHeaderAction(action);

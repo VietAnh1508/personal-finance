@@ -39,7 +39,7 @@
 - `US-WEB-000` scaffolded under `web/` with Vite + React + TypeScript + Tailwind, plus lint/typecheck/test scripts and setup guide.
 - `US-WEB-003` completed with Dexie-backed IndexedDB schema (`wallets`, `transactions`, `user_preferences`, `app_state`, `outbox`), repository CRUD layer, and passing web tests.
 - `US-WEB-006` completed with a production route for add income/expense, wallet-context preselection, positive minor-unit amount validation, and persistence verified by integration tests.
-- `US-WEB-007` completed with transfer and adjustment forms, wallet-context preselection, active-wallet/same-wallet transfer validation, paired transfer creation with shared transfer id, and green service + page integration tests.
+- `US-WEB-007` completed with transfer and adjustment forms, wallet-context preselection, active-wallet/same-wallet transfer validation, paired transfer creation with shared transfer id, UI guard blocking transfers from source wallets with current balance `<= 0`, and green service + page integration tests.
 - `US-WEB-008` completed with transaction detail edit/delete UI for income/expense, transfer, and adjustment types; transfer pair-safe edit/delete domain logic; confirmation before delete; and toast success/error feedback coverage for update/delete actions.
 - Frozen RN backlog from `docs/PROGRESS.md` is mapped to: `US-WEB-013` (US-010), `US-WEB-014` (US-012), `US-WEB-015` (US-013), `US-WEB-016` (US-014).
 - Additional parity carry-forward: `US-WEB-017` maps to completed RN story `US-011` (wallet management in Settings).

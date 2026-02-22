@@ -5,8 +5,11 @@ import { PageLoadingState } from '@/components/PageLoadingState';
 import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
 import {
   addTransferTransaction,
+  getAllActiveWallets,
   getLastUsedWalletContext,
   getSelectedCurrency,
+  getSignedTransactionAmount,
+  getTransactionsForWalletContext,
 } from '@/domain/services';
 import { WalletSelectField } from '@/features/transactions/WalletSelectField';
 import { todayIsoDate } from '@/utils/date-format';
@@ -22,6 +25,7 @@ export function AddTransferPage() {
   const [date, setDate] = useState(todayIsoDate());
   const [note, setNote] = useState('');
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
+  const [walletBalanceById, setWalletBalanceById] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,14 +37,28 @@ export function AddTransferPage() {
 
     const loadFormContext = async () => {
       try {
-        const [selectedContext, selectedCurrency] = await Promise.all([getLastUsedWalletContext(), getSelectedCurrency()]);
+        const [selectedContext, selectedCurrency, wallets, transactions] = await Promise.all([
+          getLastUsedWalletContext(),
+          getSelectedCurrency(),
+          getAllActiveWallets(),
+          getTransactionsForWalletContext('all'),
+        ]);
 
         if (!isMounted) {
           return;
         }
 
+        const balanceByWalletId: Record<string, number> = Object.fromEntries(
+          wallets.map((wallet) => [wallet.id, wallet.initialBalance])
+        );
+        for (const transaction of transactions) {
+          balanceByWalletId[transaction.walletId] =
+            (balanceByWalletId[transaction.walletId] ?? 0) + getSignedTransactionAmount(transaction);
+        }
+
         setFromWalletId(selectedContext && selectedContext !== 'all' ? selectedContext : '');
         setCurrencyCode(selectedCurrency ?? 'USD');
+        setWalletBalanceById(balanceByWalletId);
       } catch (error) {
         if (isMounted) {
           setErrorMessage(error instanceof Error ? error.message : 'Unable to load transfer form.');
@@ -71,6 +89,12 @@ export function AddTransferPage() {
     const normalizedAmount = parseAmountToMinorUnits(amountInput);
     if (normalizedAmount === null || normalizedAmount <= 0) {
       setErrorMessage('Amount must be greater than 0.');
+      return;
+    }
+
+    const fromWalletBalance = walletBalanceById[fromWalletId] ?? null;
+    if (fromWalletBalance !== null && fromWalletBalance <= 0) {
+      setErrorMessage('From wallet balance must be greater than 0.');
       return;
     }
 
