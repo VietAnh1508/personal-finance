@@ -20,6 +20,8 @@ function renderTransactionsPage() {
     [
       { path: '/transactions', element: <TransactionsPage /> },
       { path: '/transactions/:id', element: <h1>Transaction Detail Route</h1> },
+      { path: '/transactions/transfer', element: <h1>Transfer Route</h1> },
+      { path: '/transactions/adjustment', element: <h1>Adjustment Route</h1> },
     ],
     { initialEntries: ['/transactions'] }
   );
@@ -168,5 +170,91 @@ describe('TransactionsPage', () => {
     expect(screen.queryByRole('option', { name: 'Old Wallet' })).not.toBeInTheDocument();
 
     await expect(getLastSelectedWalletContext()).resolves.toBe('all');
+  });
+
+  it('opens actions menu and navigates to transfer and adjustment routes', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_a',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_b',
+      name: 'Bank',
+      initialBalance: 50_00,
+      iconKey: 'bank',
+    });
+
+    renderTransactionsPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Open actions menu' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Transfer' }));
+
+    expect(await screen.findByRole('heading', { name: 'Transfer Route' })).toBeInTheDocument();
+  });
+
+  it('opens actions menu and navigates to adjustment route', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_a',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_b',
+      name: 'Bank',
+      initialBalance: 50_00,
+      iconKey: 'bank',
+    });
+
+    renderTransactionsPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Open actions menu' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Adjust balance' }));
+
+    expect(await screen.findByRole('heading', { name: 'Adjustment Route' })).toBeInTheDocument();
+  });
+
+  it('shows validation error instead of navigating when transfer is unavailable', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_a',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+
+    renderTransactionsPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Open actions menu' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Transfer' }));
+
+    expect(screen.getByText('At least two active wallets are required for transfer.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Transfer Route' })).not.toBeInTheDocument();
+  });
+
+  it('removes inline transfer and adjustment buttons from the page body', async () => {
+    await saveCurrencyPreference('USD');
+    await saveWallet({
+      id: 'wallet_a',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
+    });
+    await saveWallet({
+      id: 'wallet_b',
+      name: 'Bank',
+      initialBalance: 50_00,
+      iconKey: 'bank',
+    });
+
+    renderTransactionsPage();
+
+    await screen.findByRole('heading', { name: 'Transactions' });
+    expect(screen.queryByRole('link', { name: 'Transfer' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Adjustment' })).not.toBeInTheDocument();
   });
 });

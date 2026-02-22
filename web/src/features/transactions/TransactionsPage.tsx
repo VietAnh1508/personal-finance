@@ -20,6 +20,10 @@ import {
   formatIsoDateWeekday,
 } from '@/utils/date-format';
 import { formatMinorUnits, formatSignedMinorUnits } from '@/utils/money-format';
+import {
+  type TransactionHeaderAction,
+  TransactionsHeaderActionsMenu,
+} from '@/features/transactions/TransactionsHeaderActionsMenu';
 
 type WalletContextValue = 'all' | string;
 
@@ -47,6 +51,7 @@ export function TransactionsPage() {
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
 
   const currencySymbol = getCurrencySymbol(currencyCode);
   const currencyFractionDigits = getCurrencyFractionDigits(currencyCode);
@@ -153,6 +158,16 @@ export function TransactionsPage() {
     void setLastUsedWalletContext(context);
   };
 
+  const onSelectHeaderAction = (action: TransactionHeaderAction) => {
+    if (action === 'transfer' && wallets.length < 2) {
+      setActionErrorMessage('At least two active wallets are required for transfer.');
+      return;
+    }
+
+    setActionErrorMessage(null);
+    navigate(action === 'transfer' ? '/transactions/transfer' : '/transactions/adjustment');
+  };
+
   if (isLoading) {
     return <PageLoadingState message="Loading transactions..." title="Transactions" />;
   }
@@ -200,9 +215,18 @@ export function TransactionsPage() {
             </p>
           </div>
 
-          <div aria-hidden className="h-9 w-11" />
+          <TransactionsHeaderActionsMenu
+            onSelectAction={(action) => {
+              setActionErrorMessage(null);
+              onSelectHeaderAction(action);
+            }}
+          />
         </div>
       </div>
+
+      {actionErrorMessage ? (
+        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{actionErrorMessage}</p>
+      ) : null}
 
       <div className="space-y-3">
         {visibleTransactions.length === 0 ? (
@@ -258,16 +282,6 @@ export function TransactionsPage() {
       <div className="flex flex-wrap gap-2">
         <Link className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/transactions/add">
           Add Transaction
-        </Link>
-        <Link
-          className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40"
-          to="/transactions/transfer">
-          Transfer
-        </Link>
-        <Link
-          className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40"
-          to="/transactions/adjustment">
-          Adjustment
         </Link>
       </div>
     </section>
