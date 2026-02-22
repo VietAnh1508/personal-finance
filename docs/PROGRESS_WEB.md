@@ -20,7 +20,7 @@
 - [x] US-WEB-007 Port transfer and adjustment flows
 - [x] US-WEB-008 Port transaction detail edit/delete flow
 - [ ] US-WEB-009 Implement backend sync API integration (outbox push/pull)
-- [ ] US-WEB-010 Enable PWA installability and offline app shell
+- [x] US-WEB-010 Enable PWA installability and offline app shell
 - [ ] US-WEB-011 Set up web test infrastructure and migration parity checks
 - [ ] US-WEB-012 Decommission React Native/Expo app and make PWA the only client
 - [ ] US-WEB-013 Implement category management in PWA
@@ -45,3 +45,4 @@
 - Web import convention: for internal web app modules under `web/src`, prefer alias imports using `@/...` instead of relative traversal (`../` or `../../`).
 - Follow-up dependency: when implementing `US-WEB-008` (transaction update/delete flow), add toast success/error coverage for edit/delete actions there; and when `US-WEB-017` ships wallet update UI/actions on web, add toast success/error coverage for wallet update to fully close `US-WEB-018` acceptance criterion #3.
 - `US-WEB-017` completed with web wallet settings UI for create/edit/archive, archived visibility toggle, and transfer endpoint filtering tests for archived wallet exclusion.
+- `US-WEB-010` completed with manifest metadata/icons, service worker app-shell caching with navigation fallback, install prompt UI wiring, and service-worker update activation flow with tests.

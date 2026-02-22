@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="126" y1="150" x2="388" y2="362" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCD34D"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="120" fill="url(#bg)"/>
+  <rect x="64" y="64" width="384" height="384" rx="96" fill="#0B1220" fill-opacity="0.85"/>
+  <circle cx="256" cy="256" r="132" fill="url(#coin)"/>
+  <path d="M301 196C294 186 280 180 262 180C233 180 212 197 212 224C212 252 232 267 260 274C282 280 294 287 294 301C294 316 281 326 262 326C242 326 227 316 219 300L183 319C197 349 227 368 262 368C304 368 336 342 336 302C336 266 310 248 277 239C255 233 248 226 248 216C248 207 256 199 269 199C280 199 288 204 294 214L301 196Z" fill="#0F172A"/>
+</svg>
