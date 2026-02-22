@@ -1,5 +1,7 @@
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { PageHeader } from '@/components/PageHeader';
+import { PageLoadingState } from '@/components/PageLoadingState';
 import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
 import {
   deleteTransactionById,
@@ -229,12 +231,7 @@ export function TransactionDetailPage() {
   };
 
   if (isLoading) {
-    return (
-      <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-        <h1 className="text-2xl font-semibold tracking-tight">Transaction detail</h1>
-        <p className="mt-3 text-sm text-slate-300">Loading transaction...</p>
-      </section>
-    );
+    return <PageLoadingState message="Loading transaction..." title="Transaction detail" />;
   }
 
   if (!transactionDetail) {
@@ -258,12 +255,7 @@ export function TransactionDetailPage() {
 
   return (
     <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">{heading}</h1>
-        <Link className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/transactions">
-          Back
-        </Link>
-      </div>
+      <PageHeader backTo="/transactions" title={heading} />
 
       <form className="mt-6 space-y-4" noValidate onSubmit={onSubmit}>
         {transactionDetail.kind === 'transfer' ? (

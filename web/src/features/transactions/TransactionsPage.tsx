@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
+import { PageLoadingState } from '@/components/PageLoadingState';
 import { WalletIcon } from '@/components/WalletIcon';
 import type { TransactionEntry } from '@/data/repositories';
 import {
@@ -144,6 +146,7 @@ export function TransactionsPage() {
     selectedContext === 'all'
       ? wallets.reduce((total, wallet) => total + wallet.initialBalance + (netByWalletId[wallet.id] ?? 0), 0)
       : (selectedWallet?.initialBalance ?? 0) + (selectedWallet ? (netByWalletId[selectedWallet.id] ?? 0) : 0);
+  const selectedContextLabel = selectedContext === 'all' ? 'All Wallets' : (selectedWallet?.name ?? 'Wallet');
 
   const onSelectWalletContext = (context: WalletContextValue) => {
     setSelectedContext(context);
@@ -151,12 +154,7 @@ export function TransactionsPage() {
   };
 
   if (isLoading) {
-    return (
-      <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-        <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
-        <p className="mt-3 text-sm text-slate-300">Loading transactions...</p>
-      </section>
-    );
+    return <PageLoadingState message="Loading transactions..." title="Transactions" />;
   }
 
   if (errorMessage) {
@@ -170,19 +168,19 @@ export function TransactionsPage() {
 
   return (
     <section className="space-y-4">
+      <h1 className="sr-only">Transactions</h1>
       <div className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-6 shadow-xl backdrop-blur">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Wallet context</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {selectedWallet ? <WalletIcon className="h-5 w-5 text-slate-200" iconKey={selectedWallet.iconKey} /> : null}
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+          <div className="relative h-9 w-11">
+            <div className="pointer-events-none inline-flex h-9 w-11 items-center justify-center gap-1 rounded-md border border-slate-300/20 bg-slate-900/70">
+              <WalletIcon className="h-4 w-4 text-slate-200" iconKey={selectedWallet?.iconKey ?? 'wallet'} />
+              <ChevronDownIcon className="h-3.5 w-3.5 text-slate-300" />
+            </div>
             <label className="sr-only" htmlFor="wallet-context">
               Select wallet context
             </label>
             <select
-              className="rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               id="wallet-context"
               onChange={(event) => onSelectWalletContext(event.target.value)}
               value={selectedContext}>
@@ -194,11 +192,16 @@ export function TransactionsPage() {
               ))}
             </select>
           </div>
+
+          <div className="text-center">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{selectedContextLabel}</p>
+            <p className="text-3xl font-semibold text-amber-200">
+              {formatMinorUnits(displayedTotalMinorUnits, currencySymbol, currencyFractionDigits)}
+            </p>
+          </div>
+
+          <div aria-hidden className="h-9 w-11" />
         </div>
-        <p className="mt-6 text-sm text-slate-400">{selectedContext === 'all' ? 'All Wallets' : selectedWallet?.name}</p>
-        <p className="text-3xl font-semibold text-amber-200">
-          {formatMinorUnits(displayedTotalMinorUnits, currencySymbol, currencyFractionDigits)}
-        </p>
       </div>
 
       <div className="space-y-3">

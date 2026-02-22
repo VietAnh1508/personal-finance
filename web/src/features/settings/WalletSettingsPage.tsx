@@ -1,5 +1,6 @@
 import { type SyntheticEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { PageHeader } from '@/components/PageHeader';
+import { PageLoadingState } from '@/components/PageLoadingState';
 import { WalletIcon } from '@/components/WalletIcon';
 import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
 import { WALLET_ICON_OPTIONS, type WalletIconKey } from '@/domain/wallet-icon';
@@ -198,22 +199,12 @@ export function WalletSettingsPage() {
   };
 
   if (isLoading) {
-    return (
-      <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-        <h1 className="text-2xl font-semibold tracking-tight">Wallet management</h1>
-        <p className="mt-3 text-sm text-slate-300">Loading wallet settings...</p>
-      </section>
-    );
+    return <PageLoadingState message="Loading wallet settings..." title="Wallet management" />;
   }
 
   return (
     <section className="space-y-4 rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Wallet management</h1>
-        <Link className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/settings">
-          Back to settings
-        </Link>
-      </div>
+      <PageHeader backLabel="Back to settings" backTo="/settings" title="Wallet management" />
 
       <form className="space-y-4 rounded-2xl border border-slate-300/20 bg-slate-900/35 p-4" noValidate onSubmit={onCreateWallet}>
         <p className="text-sm font-semibold text-slate-100">Create wallet</p>
