@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PageLoadingState } from '@/components/PageLoadingState';
 import { WalletIcon } from '@/components/WalletIcon';
 import type { TransactionEntry } from '@/data/repositories';
@@ -289,12 +289,6 @@ export function TransactionsPage() {
             </div>
           </article>
         ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <Link className="rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/transactions/add">
-          Add Transaction
-        </Link>
       </div>
     </section>
   );

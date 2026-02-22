@@ -29,7 +29,7 @@
 - [ ] US-WEB-016 Implement currency change no-conversion warning in PWA
 - [x] US-WEB-017 Port settings wallet management flow
 - [-] US-WEB-018 Implement action feedback toast notifications
-- [ ] US-WEB-019 Port mobile footer tab navigation
+- [x] US-WEB-019 Port mobile footer tab navigation
 - [x] US-WEB-020 Port transactions header actions menu
 
 ## Notes
@@ -51,3 +51,4 @@
 - `US-WEB-017` completed with web wallet settings UI for create/edit/archive, archived visibility toggle, and transfer endpoint filtering tests for archived wallet exclusion.
 - `US-WEB-010` completed with manifest metadata/icons, service worker app-shell caching with navigation fallback, install prompt UI wiring, and service-worker update activation flow with tests.
 - `US-WEB-020` completed with a transactions top-right actions menu (`Transfer`, `Adjust balance`), transfer minimum-wallet guard before navigation, menu dismiss behavior, and removal of inline transfer/adjustment buttons from transactions page.
+- `US-WEB-019` completed with a mobile-first bottom footer tab bar for app main routes (`/transactions`, `/settings`), a visually emphasized center `Add` action routing to `/transactions/add`, active tab highlighting, and removal of the prior app-area top link navigation.

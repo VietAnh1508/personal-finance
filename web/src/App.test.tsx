@@ -70,6 +70,44 @@ describe('onboarding routing flow', () => {
     expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
   });
 
+  it('shows mobile footer tabs on transactions route with center add action', async () => {
+    renderWithProviders('/transactions');
+
+    const footer = await screen.findByRole('navigation', { name: 'Primary app navigation' });
+    expect(footer).toBeInTheDocument();
+
+    const transactionsTab = screen.getByRole('link', { name: 'Transactions' });
+    const addAction = screen.getByRole('link', { name: 'Add' });
+    const settingsTab = screen.getByRole('link', { name: 'Settings' });
+
+    expect(transactionsTab).toHaveAttribute('aria-current', 'page');
+    expect(settingsTab).not.toHaveAttribute('aria-current');
+
+    expect(addAction).toHaveAttribute('href', '/transactions/add');
+  });
+
+  it('shows footer active state for settings route', async () => {
+    renderWithProviders('/settings');
+
+    const transactionsTab = await screen.findByRole('link', { name: 'Transactions' });
+    const settingsTab = screen.getByRole('link', { name: 'Settings' });
+
+    expect(settingsTab).toHaveAttribute('aria-current', 'page');
+    expect(transactionsTab).not.toHaveAttribute('aria-current');
+  });
+
+  it('hides footer navigation on onboarding routes', async () => {
+    renderWithProviders('/onboarding/currency');
+    expect(await screen.findByRole('heading', { name: 'Choose your currency' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Primary app navigation' })).not.toBeInTheDocument();
+  });
+
+  it('hides footer navigation on transaction add route', async () => {
+    renderWithProviders('/transactions/add');
+    expect(await screen.findByRole('link', { name: 'Back' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Primary app navigation' })).not.toBeInTheDocument();
+  });
+
   it('persists selected currency and moves to wallet setup', async () => {
     renderWithProviders('/onboarding/currency');
 
@@ -89,7 +127,7 @@ describe('onboarding routing flow', () => {
     fireEvent.change(screen.getByLabelText('Initial balance'), { target: { value: '1000.50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Create wallet' }));
 
-    expect(await screen.findByRole('heading', { name: 'Transactions' })).toBeInTheDocument();
+    expect(await screen.findByText('No transactions yet.')).toBeInTheDocument();
 
     const wallets = await listActiveWallets();
     expect(wallets).toHaveLength(1);
