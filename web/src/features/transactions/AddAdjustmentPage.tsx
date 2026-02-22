@@ -10,13 +10,15 @@ import {
 import { todayIsoDate } from '@/utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
+import {
+  AdjustmentDirectionField,
+  type AdjustmentDirection,
+} from '@/features/transactions/AdjustmentDirectionField';
 
 type WalletSummary = {
   id: string;
   name: string;
 };
-
-type AdjustmentDirection = 'increase' | 'decrease';
 
 export function AddAdjustmentPage() {
   const navigate = useNavigate();
@@ -169,31 +171,7 @@ export function AddAdjustmentPage() {
           </select>
         </div>
 
-        <fieldset className="space-y-2">
-          <legend className="text-sm text-slate-200">Direction</legend>
-          <div className="flex gap-3">
-            <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">
-              <input
-                checked={direction === 'increase'}
-                className="accent-amber-300"
-                name="adjustment-direction"
-                onChange={() => setDirection('increase')}
-                type="radio"
-              />
-              Increase
-            </label>
-            <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">
-              <input
-                checked={direction === 'decrease'}
-                className="accent-amber-300"
-                name="adjustment-direction"
-                onChange={() => setDirection('decrease')}
-                type="radio"
-              />
-              Decrease
-            </label>
-          </div>
-        </fieldset>
+        <AdjustmentDirectionField name="adjustment-direction" onChange={setDirection} value={direction} />
 
         <div className="space-y-2">
           <label className="text-sm text-slate-200" htmlFor="add-adjustment-amount">

@@ -11,6 +11,7 @@ import { type IncomeExpenseTransactionType } from '@/domain/transaction-type';
 import { todayIsoDate } from '@/utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
+import { IncomeExpenseTypeField } from '@/features/transactions/IncomeExpenseTypeField';
 
 type WalletSummary = {
   id: string;
@@ -177,19 +178,7 @@ export function AddIncomeExpensePage() {
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transaction-type">
-            Type
-          </label>
-          <select
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
-            id="add-transaction-type"
-            onChange={(event) => setType(event.target.value as IncomeExpenseTransactionType)}
-            value={type}>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-        </div>
+        <IncomeExpenseTypeField id="add-transaction-type" onChange={setType} value={type} />
 
         <div className="space-y-2">
           <label className="text-sm text-slate-200" htmlFor="add-transaction-amount">

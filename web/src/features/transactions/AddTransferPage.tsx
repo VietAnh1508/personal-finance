@@ -3,23 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
 import {
   addTransferTransaction,
-  getAllActiveWallets,
   getLastUsedWalletContext,
   getSelectedCurrency,
 } from '@/domain/services';
+import { WalletSelectField } from '@/features/transactions/WalletSelectField';
 import { todayIsoDate } from '@/utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
 
-type WalletSummary = {
-  id: string;
-  name: string;
-};
-
 export function AddTransferPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [wallets, setWallets] = useState<WalletSummary[]>([]);
   const [fromWalletId, setFromWalletId] = useState('');
   const [toWalletId, setToWalletId] = useState('');
   const [amountInput, setAmountInput] = useState('');
@@ -37,28 +31,13 @@ export function AddTransferPage() {
 
     const loadFormContext = async () => {
       try {
-        const [activeWallets, selectedContext, selectedCurrency] = await Promise.all([
-          getAllActiveWallets(),
-          getLastUsedWalletContext(),
-          getSelectedCurrency(),
-        ]);
-
-        const preselectedFromWallet =
-          selectedContext && selectedContext !== 'all' && activeWallets.some((wallet) => wallet.id === selectedContext)
-            ? selectedContext
-            : '';
+        const [selectedContext, selectedCurrency] = await Promise.all([getLastUsedWalletContext(), getSelectedCurrency()]);
 
         if (!isMounted) {
           return;
         }
 
-        setWallets(
-          activeWallets.map((wallet) => ({
-            id: wallet.id,
-            name: wallet.name,
-          }))
-        );
-        setFromWalletId(preselectedFromWallet);
+        setFromWalletId(selectedContext && selectedContext !== 'all' ? selectedContext : '');
         setCurrencyCode(selectedCurrency ?? 'USD');
       } catch (error) {
         if (isMounted) {
@@ -153,43 +132,23 @@ export function AddTransferPage() {
       </div>
 
       <form className="mt-6 space-y-4" noValidate onSubmit={onSubmit}>
-        <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transfer-from-wallet">
-            From wallet
-          </label>
-          <select
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
-            id="add-transfer-from-wallet"
-            onChange={(event) => setFromWalletId(event.target.value)}
-            required
-            value={fromWalletId}>
-            <option value="">Select source wallet</option>
-            {wallets.map((wallet) => (
-              <option key={wallet.id} value={wallet.id}>
-                {wallet.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <WalletSelectField
+          id="add-transfer-from-wallet"
+          label="From wallet"
+          onChange={setFromWalletId}
+          onLoadError={(message) => setErrorMessage(message)}
+          placeholder="Select source wallet"
+          value={fromWalletId}
+        />
 
-        <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transfer-to-wallet">
-            To wallet
-          </label>
-          <select
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
-            id="add-transfer-to-wallet"
-            onChange={(event) => setToWalletId(event.target.value)}
-            required
-            value={toWalletId}>
-            <option value="">Select destination wallet</option>
-            {wallets.map((wallet) => (
-              <option key={wallet.id} value={wallet.id}>
-                {wallet.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <WalletSelectField
+          id="add-transfer-to-wallet"
+          label="To wallet"
+          onChange={setToWalletId}
+          onLoadError={(message) => setErrorMessage(message)}
+          placeholder="Select destination wallet"
+          value={toWalletId}
+        />
 
         <div className="space-y-2">
           <label className="text-sm text-slate-200" htmlFor="add-transfer-amount">

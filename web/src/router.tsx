@@ -6,22 +6,9 @@ import { SettingsPage } from '@/features/settings/SettingsPage';
 import { WalletSettingsPage } from '@/features/settings/WalletSettingsPage';
 import { AddAdjustmentPage } from '@/features/transactions/AddAdjustmentPage';
 import { AddIncomeExpensePage } from '@/features/transactions/AddIncomeExpensePage';
+import { TransactionDetailPage } from '@/features/transactions/TransactionDetailPage';
 import { AddTransferPage } from '@/features/transactions/AddTransferPage';
 import { TransactionsPage } from '@/features/transactions/TransactionsPage';
-
-type PlaceholderPageProps = {
-  heading: string;
-  description: string;
-};
-
-function PlaceholderPage({ heading, description }: PlaceholderPageProps) {
-  return (
-    <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
-      <h1 className="text-2xl font-semibold tracking-tight">{heading}</h1>
-      <p className="mt-3 text-sm leading-7 text-slate-300">{description}</p>
-    </section>
-  );
-}
 
 function RouteDirectoryPage() {
   return (
@@ -95,15 +82,6 @@ function AppLayout() {
   );
 }
 
-function TransactionDetailPlaceholderPage() {
-  return (
-    <PlaceholderPage
-      heading="Transaction Detail Route"
-      description="Placeholder screen for viewing a single transaction by ID."
-    />
-  );
-}
-
 function NotFoundPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 text-slate-100">
@@ -156,7 +134,7 @@ export const routeConfig: RouteObject[] = [
       },
       {
         path: '/transactions/:id',
-        element: <TransactionDetailPlaceholderPage />,
+        element: <TransactionDetailPage />,
       },
       {
         path: '/settings',
