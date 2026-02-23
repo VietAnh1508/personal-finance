@@ -3,6 +3,8 @@ import { MobileFooterTabNav } from '@/components/MobileFooterTabNav';
 import { CurrencyOnboardingPage } from '@/features/onboarding/CurrencyOnboardingPage';
 import { FirstWalletOnboardingPage } from '@/features/onboarding/FirstWalletOnboardingPage';
 import { OnboardingGatePage } from '@/features/onboarding/OnboardingGatePage';
+import { WalletCreatePage } from '@/features/settings/WalletCreatePage';
+import { WalletEditPage } from '@/features/settings/WalletEditPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { WalletSettingsPage } from '@/features/settings/WalletSettingsPage';
 import { AddAdjustmentPage } from '@/features/transactions/AddAdjustmentPage';
@@ -49,6 +51,12 @@ function RouteDirectoryPage() {
           </Link>
           <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets">
             Wallet Settings
+          </Link>
+          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets/add">
+            Add Wallet
+          </Link>
+          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets/demo-wallet/edit">
+            Edit Wallet
           </Link>
         </nav>
       </section>
@@ -131,6 +139,14 @@ export const routeConfig: RouteObject[] = [
       {
         path: '/settings/wallets',
         element: <WalletSettingsPage />,
+      },
+      {
+        path: '/settings/wallets/add',
+        element: <WalletCreatePage />,
+      },
+      {
+        path: '/settings/wallets/:walletId/edit',
+        element: <WalletEditPage />,
       },
     ],
   },

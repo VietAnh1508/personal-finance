@@ -6,7 +6,6 @@ import {
   listActiveWallets,
   listArchivedWallets,
   resetLocalAppData,
-  saveCurrencyPreference,
   saveWallet,
 } from '@/data/repositories';
 import { ToastProvider } from '@/features/feedback/ToastProvider';
@@ -22,6 +21,14 @@ function renderWalletSettingsPage() {
       {
         path: '/settings',
         element: <h1>Settings Route</h1>,
+      },
+      {
+        path: '/settings/wallets/add',
+        element: <h1>Add Wallet Route</h1>,
+      },
+      {
+        path: '/settings/wallets/:walletId/edit',
+        element: <h1>Edit Wallet Route</h1>,
       },
     ],
     { initialEntries: ['/settings/wallets'] }
@@ -44,8 +51,7 @@ describe('WalletSettingsPage', () => {
     await closeDatabaseConnection();
   });
 
-  it('creates, edits, and archives wallets from settings', async () => {
-    await saveCurrencyPreference('USD');
+  it('shows active wallets by default and links to add/edit pages', async () => {
     await saveWallet({
       id: 'wallet_cash',
       name: 'Cash',
@@ -56,39 +62,40 @@ describe('WalletSettingsPage', () => {
     renderWalletSettingsPage();
 
     expect(await screen.findByRole('heading', { name: 'Wallet management' })).toBeInTheDocument();
+    expect(await screen.findByText('Cash')).toBeInTheDocument();
 
-    fireEvent.change(await screen.findByLabelText('Wallet name'), { target: { value: 'Savings' } });
-    fireEvent.change(screen.getByLabelText('Initial balance ($)'), { target: { value: '250.50' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Create wallet' }));
+    const addWalletLink = screen.getByRole('link', { name: 'Add' });
+    expect(addWalletLink).toHaveAttribute('href', '/settings/wallets/add');
 
-    await waitFor(async () => {
-      const wallets = await listActiveWallets();
-      expect(wallets.some((wallet) => wallet.name === 'Savings' && wallet.initialBalance === 250_50)).toBe(true);
+    const editWalletLink = screen.getByRole('link', { name: 'Edit Cash' });
+    expect(editWalletLink).toHaveAttribute('href', '/settings/wallets/wallet_cash/edit');
+
+    fireEvent.click(editWalletLink);
+
+    expect(await screen.findByRole('heading', { name: 'Edit Wallet Route' })).toBeInTheDocument();
+  });
+
+  it('archives wallets from settings', async () => {
+    await saveWallet({
+      id: 'wallet_cash',
+      name: 'Cash',
+      initialBalance: 100_00,
+      iconKey: 'wallet',
     });
 
-    const editCashButton = await screen.findByRole('button', { name: 'Edit Cash' });
-    fireEvent.click(editCashButton);
+    renderWalletSettingsPage();
 
-    fireEvent.change(screen.getByLabelText('Edit wallet name'), { target: { value: 'Cash Wallet' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-
-    await waitFor(async () => {
-      const wallets = await listActiveWallets();
-      expect(wallets.some((wallet) => wallet.name === 'Cash Wallet')).toBe(true);
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'Archive Cash Wallet' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Archive Cash' }));
 
     await waitFor(async () => {
       const activeWallets = await listActiveWallets();
       const archivedWallets = await listArchivedWallets();
-      expect(activeWallets.some((wallet) => wallet.name === 'Cash Wallet')).toBe(false);
-      expect(archivedWallets.some((wallet) => wallet.name === 'Cash Wallet')).toBe(true);
+      expect(activeWallets.some((wallet) => wallet.name === 'Cash')).toBe(false);
+      expect(archivedWallets.some((wallet) => wallet.name === 'Cash')).toBe(true);
     });
   });
 
   it('hides archived wallets by default and shows them when toggled', async () => {
-    await saveCurrencyPreference('USD');
     await saveWallet({
       id: 'wallet_active',
       name: 'Active Wallet',
