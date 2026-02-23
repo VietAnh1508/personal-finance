@@ -1,17 +1,18 @@
-import { type SyntheticEvent, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { type SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
 import { PageLoadingState } from '@/components/PageLoadingState';
-import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
+import { getCurrencySymbol } from '@/domain/currency';
 import {
   addTransferTransaction,
   getAllActiveWallets,
   getLastUsedWalletContext,
-  getSelectedCurrency,
   getSignedTransactionAmount,
   getTransactionsForWalletContext,
 } from '@/domain/services';
 import { WalletSelectField } from '@/features/transactions/WalletSelectField';
+import { getSelectedCurrencyOrDefault } from '@/features/shared/useSelectedCurrencyQuery';
 import { todayIsoDate } from '@/utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
@@ -19,63 +20,44 @@ import { useToast } from '@/features/feedback/ToastProvider';
 export function AddTransferPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [fromWalletId, setFromWalletId] = useState('');
+  const [fromWalletIdOverride, setFromWalletIdOverride] = useState<string | null>(null);
   const [toWalletId, setToWalletId] = useState('');
   const [amountInput, setAmountInput] = useState('');
   const [date, setDate] = useState(todayIsoDate());
   const [note, setNote] = useState('');
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
-  const [walletBalanceById, setWalletBalanceById] = useState<Record<string, number>>({});
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const formContextQuery = useQuery({
+    queryKey: ['transfer-form-context'],
+    queryFn: async () => {
+      const [selectedContext, selectedCurrency, wallets, transactions] = await Promise.all([
+        getLastUsedWalletContext(),
+        getSelectedCurrencyOrDefault(),
+        getAllActiveWallets(),
+        getTransactionsForWalletContext('all'),
+      ]);
 
-  const currencySymbol = getCurrencySymbol(currencyCode);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadFormContext = async () => {
-      try {
-        const [selectedContext, selectedCurrency, wallets, transactions] = await Promise.all([
-          getLastUsedWalletContext(),
-          getSelectedCurrency(),
-          getAllActiveWallets(),
-          getTransactionsForWalletContext('all'),
-        ]);
-
-        if (!isMounted) {
-          return;
-        }
-
-        const balanceByWalletId: Record<string, number> = Object.fromEntries(
-          wallets.map((wallet) => [wallet.id, wallet.initialBalance])
-        );
-        for (const transaction of transactions) {
-          balanceByWalletId[transaction.walletId] =
-            (balanceByWalletId[transaction.walletId] ?? 0) + getSignedTransactionAmount(transaction);
-        }
-
-        setFromWalletId(selectedContext && selectedContext !== 'all' ? selectedContext : '');
-        setCurrencyCode(selectedCurrency ?? 'USD');
-        setWalletBalanceById(balanceByWalletId);
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load transfer form.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+      const walletBalanceById: Record<string, number> = Object.fromEntries(
+        wallets.map((wallet) => [wallet.id, wallet.initialBalance])
+      );
+      for (const transaction of transactions) {
+        walletBalanceById[transaction.walletId] =
+          (walletBalanceById[transaction.walletId] ?? 0) + getSignedTransactionAmount(transaction);
       }
-    };
 
-    void loadFormContext();
+      return {
+        preselectedFromWalletId: selectedContext && selectedContext !== 'all' ? selectedContext : '',
+        currencyCode: selectedCurrency,
+        walletBalanceById,
+      };
+    },
+  });
+  const fromWalletId = fromWalletIdOverride ?? formContextQuery.data?.preselectedFromWalletId ?? '';
+  const walletBalanceById = formContextQuery.data?.walletBalanceById ?? {};
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const currencySymbol = getCurrencySymbol(formContextQuery.data?.currencyCode ?? 'USD');
+  const loadErrorMessage =
+    formContextQuery.error instanceof Error ? formContextQuery.error.message : 'Unable to load transfer form.';
 
   const onSubmit = async (event: SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     event.preventDefault();
@@ -139,7 +121,7 @@ export function AddTransferPage() {
     setAmountInput(formatAmountInput(normalizedValue));
   };
 
-  if (isLoading) {
+  if (formContextQuery.isLoading) {
     return <PageLoadingState message="Loading form..." title="Transfer" />;
   }
 
@@ -151,7 +133,7 @@ export function AddTransferPage() {
         <WalletSelectField
           id="add-transfer-from-wallet"
           label="From wallet"
-          onChange={setFromWalletId}
+          onChange={setFromWalletIdOverride}
           onLoadError={(message) => setErrorMessage(message)}
           placeholder="Select source wallet"
           value={fromWalletId}
@@ -210,8 +192,10 @@ export function AddTransferPage() {
           />
         </div>
 
-        {errorMessage ? (
-          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">{errorMessage}</p>
+        {errorMessage || formContextQuery.error ? (
+          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+            {errorMessage ?? loadErrorMessage}
+          </p>
         ) : null}
 
         <button

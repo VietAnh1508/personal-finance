@@ -1,14 +1,9 @@
-import { type SyntheticEvent, useEffect, useState } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
 import { PageLoadingState } from '@/components/PageLoadingState';
-import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
-import {
-  addAdjustmentTransaction,
-  getAllActiveWallets,
-  getLastUsedWalletContext,
-  getSelectedCurrency,
-} from '@/domain/services';
+import { getCurrencySymbol } from '@/domain/currency';
+import { addAdjustmentTransaction } from '@/domain/services';
 import { todayIsoDate } from '@/utils/date-format';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
@@ -16,73 +11,25 @@ import {
   AdjustmentDirectionField,
   type AdjustmentDirection,
 } from '@/features/transactions/AdjustmentDirectionField';
-
-type WalletSummary = {
-  id: string;
-  name: string;
-};
+import { useTransactionFormContextQuery } from '@/features/transactions/useTransactionFormContextQuery';
 
 export function AddAdjustmentPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [wallets, setWallets] = useState<WalletSummary[]>([]);
-  const [walletId, setWalletId] = useState('');
+  const [walletIdOverride, setWalletIdOverride] = useState<string | null>(null);
   const [direction, setDirection] = useState<AdjustmentDirection>('increase');
   const [amountInput, setAmountInput] = useState('');
   const [date, setDate] = useState(todayIsoDate());
   const [note, setNote] = useState('');
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const formContextQuery = useTransactionFormContextQuery();
+  const wallets = formContextQuery.data?.wallets ?? [];
+  const walletId = walletIdOverride ?? formContextQuery.data?.preselectedWalletId ?? '';
 
-  const currencySymbol = getCurrencySymbol(currencyCode);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadFormContext = async () => {
-      try {
-        const [activeWallets, selectedContext, selectedCurrency] = await Promise.all([
-          getAllActiveWallets(),
-          getLastUsedWalletContext(),
-          getSelectedCurrency(),
-        ]);
-
-        const preselectedWallet =
-          selectedContext && selectedContext !== 'all' && activeWallets.some((wallet) => wallet.id === selectedContext)
-            ? selectedContext
-            : '';
-
-        if (!isMounted) {
-          return;
-        }
-
-        setWallets(
-          activeWallets.map((wallet) => ({
-            id: wallet.id,
-            name: wallet.name,
-          }))
-        );
-        setWalletId(preselectedWallet);
-        setCurrencyCode(selectedCurrency ?? 'USD');
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load adjustment form.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadFormContext();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const currencySymbol = getCurrencySymbol(formContextQuery.data?.currencyCode ?? 'USD');
+  const loadErrorMessage =
+    formContextQuery.error instanceof Error ? formContextQuery.error.message : 'Unable to load adjustment form.';
 
   const onSubmit = async (event: SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     event.preventDefault();
@@ -135,7 +82,7 @@ export function AddAdjustmentPage() {
     setAmountInput(formatAmountInput(normalizedValue));
   };
 
-  if (isLoading) {
+  if (formContextQuery.isLoading) {
     return <PageLoadingState message="Loading form..." title="Adjust balance" />;
   }
 
@@ -151,7 +98,7 @@ export function AddAdjustmentPage() {
           <select
             className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
             id="add-adjustment-wallet"
-            onChange={(event) => setWalletId(event.target.value)}
+            onChange={(event) => setWalletIdOverride(event.target.value)}
             required
             value={walletId}>
             <option value="">Select wallet</option>
@@ -209,8 +156,10 @@ export function AddAdjustmentPage() {
           />
         </div>
 
-        {errorMessage ? (
-          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">{errorMessage}</p>
+        {errorMessage || formContextQuery.error ? (
+          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+            {errorMessage ?? loadErrorMessage}
+          </p>
         ) : null}
 
         <button

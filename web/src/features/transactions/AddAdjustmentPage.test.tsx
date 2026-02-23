@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { closeDatabaseConnection, openDatabaseConnection } from '@/data/database';
@@ -13,6 +14,13 @@ import { AddAdjustmentPage } from '@/features/transactions/AddAdjustmentPage';
 import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 function renderAdjustmentPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
   const router = createMemoryRouter(
     [
       {
@@ -32,9 +40,11 @@ function renderAdjustmentPage() {
   );
 
   render(
-    <ToastProvider>
-      <RouterProvider router={router} />
-    </ToastProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryClientProvider>
   );
 }
 

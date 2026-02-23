@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
@@ -8,7 +9,6 @@ import {
   editAdjustmentTransaction,
   editIncomeExpenseTransaction,
   editTransferTransaction,
-  getSelectedCurrency,
   getTransactionDetailById,
   type EditableTransactionDetail,
 } from '@/domain/services';
@@ -20,6 +20,7 @@ import {
 } from '@/features/transactions/AdjustmentDirectionField';
 import { IncomeExpenseTypeField } from '@/features/transactions/IncomeExpenseTypeField';
 import { WalletSelectField } from '@/features/transactions/WalletSelectField';
+import { getSelectedCurrencyOrDefault } from '@/features/shared/useSelectedCurrencyQuery';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 
 function formatMinorUnitsForInput(amountMinorUnits: number): string {
@@ -31,9 +32,6 @@ export function TransactionDetailPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const [transactionDetail, setTransactionDetail] = useState<EditableTransactionDetail | null>(null);
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
-
   const [walletId, setWalletId] = useState('');
   const [type, setType] = useState<IncomeExpenseTransactionType>('expense');
   const [fromWalletId, setFromWalletId] = useState('');
@@ -44,73 +42,56 @@ export function TransactionDetailPage() {
   const [date, setDate] = useState('');
   const [note, setNote] = useState('');
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const transactionDetailQuery = useQuery({
+    queryKey: ['transaction-detail', id],
+    queryFn: async (): Promise<{ currencyCode: CurrencyCode; detail: EditableTransactionDetail | null }> => {
+      const [selectedCurrency, detail] = await Promise.all([
+        getSelectedCurrencyOrDefault(),
+        getTransactionDetailById(id),
+      ]);
 
-  const currencySymbol = getCurrencySymbol(currencyCode);
+      return {
+        currencyCode: selectedCurrency,
+        detail,
+      };
+    },
+  });
+  const transactionDetail = transactionDetailQuery.data?.detail ?? null;
+  const currencySymbol = getCurrencySymbol(transactionDetailQuery.data?.currencyCode ?? 'USD');
 
   useEffect(() => {
-    let isMounted = true;
+    if (!transactionDetail) {
+      return;
+    }
 
-    const loadData = async () => {
-      try {
-        const [selectedCurrency, detail] = await Promise.all([getSelectedCurrency(), getTransactionDetailById(id)]);
+    if (transactionDetail.kind === 'income_expense') {
+      setWalletId(transactionDetail.walletId);
+      setType(transactionDetail.type);
+      setCategory(transactionDetail.category);
+      setAmountInput(formatMinorUnitsForInput(transactionDetail.amountMinorUnits));
+      setDate(transactionDetail.date);
+      setNote(transactionDetail.note);
+      return;
+    }
 
-        if (!isMounted) {
-          return;
-        }
+    if (transactionDetail.kind === 'adjustment') {
+      setWalletId(transactionDetail.walletId);
+      setDirection(transactionDetail.amountMinorUnits < 0 ? 'decrease' : 'increase');
+      setAmountInput(formatMinorUnitsForInput(transactionDetail.amountMinorUnits));
+      setDate(transactionDetail.date);
+      setNote(transactionDetail.note);
+      return;
+    }
 
-        if (!detail) {
-          setErrorMessage('Transaction not found.');
-          return;
-        }
-
-        setCurrencyCode(selectedCurrency ?? 'USD');
-        setTransactionDetail(detail);
-
-        if (detail.kind === 'income_expense') {
-          setWalletId(detail.walletId);
-          setType(detail.type);
-          setCategory(detail.category);
-          setAmountInput(formatMinorUnitsForInput(detail.amountMinorUnits));
-          setDate(detail.date);
-          setNote(detail.note);
-          return;
-        }
-
-        if (detail.kind === 'adjustment') {
-          setWalletId(detail.walletId);
-          setDirection(detail.amountMinorUnits < 0 ? 'decrease' : 'increase');
-          setAmountInput(formatMinorUnitsForInput(detail.amountMinorUnits));
-          setDate(detail.date);
-          setNote(detail.note);
-          return;
-        }
-
-        setFromWalletId(detail.fromWalletId);
-        setToWalletId(detail.toWalletId);
-        setAmountInput(formatMinorUnitsForInput(detail.amountMinorUnits));
-        setDate(detail.date);
-        setNote(detail.note);
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load transaction detail.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+    setFromWalletId(transactionDetail.fromWalletId);
+    setToWalletId(transactionDetail.toWalletId);
+    setAmountInput(formatMinorUnitsForInput(transactionDetail.amountMinorUnits));
+    setDate(transactionDetail.date);
+    setNote(transactionDetail.note);
+  }, [transactionDetail]);
 
   const onAmountInputChange = (value: string) => {
     const normalizedValue = value.replace(/,/g, '');
@@ -230,15 +211,22 @@ export function TransactionDetailPage() {
     }
   };
 
-  if (isLoading) {
+  if (transactionDetailQuery.isLoading) {
     return <PageLoadingState message="Loading transaction..." title="Transaction detail" />;
   }
 
   if (!transactionDetail) {
+    const loadErrorMessage =
+      transactionDetailQuery.error instanceof Error
+        ? transactionDetailQuery.error.message
+        : 'Unable to load transaction detail.';
+
     return (
       <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
         <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Transaction detail</h1>
-        <p className="mt-3 text-sm text-rose-200">{errorMessage ?? 'Transaction not found.'}</p>
+        <p className="mt-3 text-sm text-rose-200">
+          {errorMessage ?? (transactionDetailQuery.error ? loadErrorMessage : 'Transaction not found.')}
+        </p>
         <Link className="mt-4 inline-block rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/transactions">
           Back to transactions
         </Link>

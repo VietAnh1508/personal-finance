@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import {
@@ -16,6 +17,13 @@ import {
 import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 function renderTransactionsPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
   const router = createMemoryRouter(
     [
       { path: '/transactions', element: <TransactionsPage /> },
@@ -26,7 +34,11 @@ function renderTransactionsPage() {
     { initialEntries: ['/transactions'] }
   );
 
-  render(<RouterProvider router={router} />);
+  render(
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }
 
 describe('TransactionsPage', () => {

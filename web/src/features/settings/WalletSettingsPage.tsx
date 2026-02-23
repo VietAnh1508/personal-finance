@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { ArchiveBoxIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
@@ -21,56 +22,26 @@ type WalletSummary = {
 
 export function WalletSettingsPage() {
   const { showToast } = useToast();
-  const [activeWallets, setActiveWallets] = useState<WalletSummary[]>([]);
-  const [archivedWallets, setArchivedWallets] = useState<WalletSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showArchivedWallets, setShowArchivedWallets] = useState(false);
   const [archivingWalletId, setArchivingWalletId] = useState<string | null>(null);
+  const walletSettingsQuery = useQuery({
+    queryKey: ['wallet-settings'],
+    queryFn: async (): Promise<{ activeWallets: WalletSummary[]; archivedWallets: WalletSummary[] }> => {
+      const [activeWallets, archivedWallets] = await Promise.all([
+        getAllActiveWallets(),
+        getAllArchivedWallets(),
+      ]);
 
-  const loadData = async () => {
-    const [nextActiveWallets, nextArchivedWallets] = await Promise.all([
-      getAllActiveWallets(),
-      getAllArchivedWallets(),
-    ]);
-
-    setActiveWallets(nextActiveWallets);
-    setArchivedWallets(nextArchivedWallets);
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      try {
-        const [nextActiveWallets, nextArchivedWallets] = await Promise.all([
-          getAllActiveWallets(),
-          getAllArchivedWallets(),
-        ]);
-
-        if (!isMounted) {
-          return;
-        }
-
-        setActiveWallets(nextActiveWallets);
-        setArchivedWallets(nextArchivedWallets);
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load wallet settings.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+      return { activeWallets, archivedWallets };
+    },
+  });
+  const activeWallets = walletSettingsQuery.data?.activeWallets ?? [];
+  const archivedWallets = walletSettingsQuery.data?.archivedWallets ?? [];
+  const loadErrorMessage =
+    walletSettingsQuery.error instanceof Error
+      ? walletSettingsQuery.error.message
+      : 'Unable to load wallet settings.';
 
   const onArchiveWallet = async (wallet: WalletSummary) => {
     setErrorMessage(null);
@@ -78,7 +49,7 @@ export function WalletSettingsPage() {
 
     try {
       await archiveWallet(wallet.id);
-      await loadData();
+      await walletSettingsQuery.refetch();
       showToast({
         type: 'success',
         message: 'Wallet archived successfully.',
@@ -95,7 +66,7 @@ export function WalletSettingsPage() {
     }
   };
 
-  if (isLoading) {
+  if (walletSettingsQuery.isLoading) {
     return <PageLoadingState message="Loading wallet settings..." title="Wallet management" />;
   }
 
@@ -127,8 +98,10 @@ export function WalletSettingsPage() {
         </label>
       </div>
 
-      {errorMessage ? (
-        <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">{errorMessage}</p>
+      {errorMessage || walletSettingsQuery.error ? (
+        <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+          {errorMessage ?? loadErrorMessage}
+        </p>
       ) : null}
 
       <div className="space-y-3">

@@ -1,13 +1,14 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { type SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
 import { PageLoadingState } from '@/components/PageLoadingState';
-import { type CurrencyCode, getCurrencySymbol } from '@/domain/currency';
+import { getCurrencySymbol } from '@/domain/currency';
 import { type WalletIconKey } from '@/domain/wallet-icon';
-import { createWallet, getSelectedCurrency } from '@/domain/services';
+import { createWallet } from '@/domain/services';
 import { formatAmountInput, isValidAmountInput, parseAmountToMinorUnits } from '@/utils/money-format';
 import { useToast } from '@/features/feedback/ToastProvider';
+import { useSelectedCurrencyQuery } from '@/features/shared/useSelectedCurrencyQuery';
 import { WalletForm } from '@/features/settings/WalletForm';
 
 export function WalletCreatePage() {
@@ -18,10 +19,7 @@ export function WalletCreatePage() {
   const [walletIconKey, setWalletIconKey] = useState<WalletIconKey>('wallet');
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
-  const selectedCurrencyQuery = useQuery({
-    queryKey: ['selected-currency'],
-    queryFn: async (): Promise<CurrencyCode> => (await getSelectedCurrency()) ?? 'USD',
-  });
+  const selectedCurrencyQuery = useSelectedCurrencyQuery();
 
   const createWalletMutation = useMutation({
     mutationFn: async (params: { name: string; initialBalance: number; iconKey: WalletIconKey }) =>

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { PageLoadingState } from '@/components/PageLoadingState';
@@ -7,7 +8,6 @@ import type { TransactionEntry } from '@/data/repositories';
 import {
   getAllActiveWallets,
   getLastUsedWalletContext,
-  getSelectedCurrency,
   getSignedTransactionAmount,
   getTransactionsForWalletContext,
   setLastUsedWalletContext,
@@ -24,6 +24,7 @@ import {
   type TransactionHeaderAction,
   TransactionsHeaderActionsMenu,
 } from '@/features/transactions/TransactionsHeaderActionsMenu';
+import { getSelectedCurrencyOrDefault } from '@/features/shared/useSelectedCurrencyQuery';
 
 type WalletContextValue = 'all' | string;
 
@@ -45,61 +46,47 @@ type DateSection = {
 
 export function TransactionsPage() {
   const navigate = useNavigate();
-  const [wallets, setWallets] = useState<WalletSummary[]>([]);
-  const [transactions, setTransactions] = useState<TransactionEntry[]>([]);
-  const [selectedContext, setSelectedContext] = useState<WalletContextValue>('all');
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('USD');
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedContextOverride, setSelectedContextOverride] = useState<WalletContextValue | null>(null);
   const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
+  const contextQuery = useQuery({
+    queryKey: ['transactions-page-context'],
+    queryFn: async (): Promise<{
+      wallets: WalletSummary[];
+      transactions: TransactionEntry[];
+      selectedContext: WalletContextValue;
+      currencyCode: CurrencyCode;
+    }> => {
+      const [activeWallets, selectedCurrency, lastUsedWalletContext, allTransactions] = await Promise.all([
+        getAllActiveWallets(),
+        getSelectedCurrencyOrDefault(),
+        getLastUsedWalletContext(),
+        getTransactionsForWalletContext('all'),
+      ]);
+
+      const normalizedContext =
+        lastUsedWalletContext && activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
+          ? lastUsedWalletContext
+          : 'all';
+
+      if (normalizedContext !== lastUsedWalletContext) {
+        void setLastUsedWalletContext(normalizedContext).catch(() => undefined);
+      }
+
+      return {
+        wallets: activeWallets,
+        transactions: allTransactions,
+        selectedContext: normalizedContext,
+        currencyCode: selectedCurrency,
+      };
+    },
+  });
+  const wallets = contextQuery.data?.wallets ?? [];
+  const transactions = contextQuery.data?.transactions ?? [];
+  const selectedContext = selectedContextOverride ?? contextQuery.data?.selectedContext ?? 'all';
+  const currencyCode = contextQuery.data?.currencyCode ?? 'USD';
 
   const currencySymbol = getCurrencySymbol(currencyCode);
   const currencyFractionDigits = getCurrencyFractionDigits(currencyCode);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadContextData = async () => {
-      try {
-        const [activeWallets, selectedCurrency, lastUsedWalletContext] = await Promise.all([
-          getAllActiveWallets(),
-          getSelectedCurrency(),
-          getLastUsedWalletContext(),
-        ]);
-        const allTransactions = await getTransactionsForWalletContext('all');
-
-        const normalizedContext =
-          lastUsedWalletContext && activeWallets.some((wallet) => wallet.id === lastUsedWalletContext)
-            ? lastUsedWalletContext
-            : 'all';
-
-        if (normalizedContext !== lastUsedWalletContext) {
-          void setLastUsedWalletContext(normalizedContext).catch(() => undefined);
-        }
-
-        if (isMounted) {
-          setWallets(activeWallets);
-          setTransactions(allTransactions);
-          setCurrencyCode(selectedCurrency ?? 'USD');
-          setSelectedContext(normalizedContext);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load transactions.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadContextData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const selectedWallet = wallets.find((wallet) => wallet.id === selectedContext) ?? null;
 
@@ -160,7 +147,7 @@ export function TransactionsPage() {
   const selectedContextLabel = selectedContext === 'all' ? 'All Wallets' : (selectedWallet?.name ?? 'Wallet');
 
   const onSelectWalletContext = (context: WalletContextValue) => {
-    setSelectedContext(context);
+    setSelectedContextOverride(context);
     void setLastUsedWalletContext(context).catch(() => undefined);
   };
 
@@ -179,11 +166,14 @@ export function TransactionsPage() {
     navigate(action === 'transfer' ? '/transactions/transfer' : '/transactions/adjustment');
   };
 
-  if (isLoading) {
+  if (contextQuery.isLoading) {
     return <PageLoadingState message="Loading transactions..." title="Transactions" />;
   }
 
-  if (errorMessage) {
+  if (contextQuery.error) {
+    const errorMessage =
+      contextQuery.error instanceof Error ? contextQuery.error.message : 'Unable to load transactions.';
+
     return (
       <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
         <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Transactions</h1>
