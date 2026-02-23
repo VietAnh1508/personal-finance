@@ -28,7 +28,7 @@
 - [ ] US-WEB-015 Implement future-dated transaction rules in PWA
 - [ ] US-WEB-016 Implement currency change no-conversion warning in PWA
 - [x] US-WEB-017 Port settings wallet management flow
-- [-] US-WEB-018 Implement action feedback toast notifications
+- [x] US-WEB-018 Implement action feedback toast notifications
 - [x] US-WEB-019 Port mobile footer tab navigation
 - [x] US-WEB-020 Port transactions header actions menu
 
@@ -47,7 +47,7 @@
 - Additional parity carry-forward: `US-WEB-019` covers RN tab footer behavior currently defined in `app/(tabs)/_layout.tsx` (Transactions, center Add action, Settings) and removes route-shell top link navigation in app area.
 - Additional parity carry-forward: `US-WEB-020` covers RN transactions top-right actions menu behavior from `app/(tabs)/index.tsx` (`Transfer`, `Adjust balance`).
 - Web import convention: for internal web app modules under `web/src`, prefer alias imports using `@/...` instead of relative traversal (`../` or `../../`).
-- Follow-up dependency: when implementing `US-WEB-008` (transaction update/delete flow), add toast success/error coverage for edit/delete actions there; and when `US-WEB-017` ships wallet update UI/actions on web, add toast success/error coverage for wallet update to fully close `US-WEB-018` acceptance criterion #3.
+- `US-WEB-018` completed with a reusable global `ToastProvider`, wallet create/update success and error toast hooks in onboarding/settings flows, and auto-dismiss behavior validated by tests.
 - `US-WEB-017` completed with web wallet settings UI for create/edit/archive, archived visibility toggle, and transfer endpoint filtering tests for archived wallet exclusion.
 - `US-WEB-010` completed with manifest metadata/icons, service worker app-shell caching with navigation fallback, install prompt UI wiring, and service-worker update activation flow with tests.
 - `US-WEB-020` completed with a transactions top-right actions menu (`Transfer`, `Adjust balance`), transfer minimum-wallet guard before navigation, menu dismiss behavior, and removal of inline transfer/adjustment buttons from transactions page.
