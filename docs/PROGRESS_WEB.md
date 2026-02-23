@@ -31,6 +31,7 @@
 - [x] US-WEB-018 Implement action feedback toast notifications
 - [x] US-WEB-019 Port mobile footer tab navigation
 - [x] US-WEB-020 Port transactions header actions menu
+- [x] US-WEB-021 Refactor web color system for future theme switching
 
 ## Notes
 - Existing `docs/PROGRESS.md` remains the historical RN/Expo MVP tracker.
@@ -46,6 +47,7 @@
 - Additional parity carry-forward: `US-WEB-018` maps to completed RN story `US-015` (action feedback toast notifications).
 - Additional parity carry-forward: `US-WEB-019` covers RN tab footer behavior currently defined in `app/(tabs)/_layout.tsx` (Transactions, center Add action, Settings) and removes route-shell top link navigation in app area.
 - Additional parity carry-forward: `US-WEB-020` covers RN transactions top-right actions menu behavior from `app/(tabs)/index.tsx` (`Transfer`, `Adjust balance`).
+- `US-WEB-021` completed with semantic CSS theme tokens (`:root` + `:root[data-theme='light']`), reusable themed component classes in `web/src/index.css`, and migration of onboarding/transactions/settings/shared shell components away from palette-specific utility classes.
 - Web import convention: for internal web app modules under `web/src`, prefer alias imports using `@/...` instead of relative traversal (`../` or `../../`).
 - `US-WEB-018` completed with a reusable global `ToastProvider`, wallet create/update success and error toast hooks in onboarding/settings flows, and auto-dismiss behavior validated by tests.
 - `US-WEB-017` completed with web wallet settings UI for create/edit/archive, archived visibility toggle, and transfer endpoint filtering tests for archived wallet exclusion.

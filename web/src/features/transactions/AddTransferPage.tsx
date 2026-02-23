@@ -126,7 +126,7 @@ export function AddTransferPage() {
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
+    <section className="pf-card p-7">
       <PageHeader backTo="/transactions" title="Transfer" />
 
       <form className="mt-6 space-y-4" noValidate onSubmit={onSubmit}>
@@ -149,12 +149,12 @@ export function AddTransferPage() {
         />
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transfer-amount">
+          <label className="pf-label" htmlFor="add-transfer-amount">
             Amount ({currencySymbol})
           </label>
           <input
             autoComplete="off"
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="w-full pf-input"
             id="add-transfer-amount"
             inputMode="decimal"
             name="amount"
@@ -167,11 +167,11 @@ export function AddTransferPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transfer-date">
+          <label className="pf-label" htmlFor="add-transfer-date">
             Date
           </label>
           <input
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="w-full pf-input"
             id="add-transfer-date"
             onChange={(event) => setDate(event.target.value)}
             required
@@ -181,11 +181,11 @@ export function AddTransferPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="add-transfer-note">
+          <label className="pf-label" htmlFor="add-transfer-note">
             Note (optional)
           </label>
           <textarea
-            className="min-h-24 w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="min-h-24 w-full pf-input"
             id="add-transfer-note"
             onChange={(event) => setNote(event.target.value)}
             value={note}
@@ -193,13 +193,13 @@ export function AddTransferPage() {
         </div>
 
         {errorMessage || formContextQuery.error ? (
-          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+          <p className="pf-error-box">
             {errorMessage ?? loadErrorMessage}
           </p>
         ) : null}
 
         <button
-          className="rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+          className="pf-button-primary"
           disabled={isSubmitting}
           type="submit">
           {isSubmitting ? 'Saving...' : 'Save transfer'}

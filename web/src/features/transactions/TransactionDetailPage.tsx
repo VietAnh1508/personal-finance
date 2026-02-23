@@ -222,12 +222,12 @@ export function TransactionDetailPage() {
         : 'Unable to load transaction detail.';
 
     return (
-      <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Transaction detail</h1>
-        <p className="mt-3 text-sm text-rose-200">
+      <section className="pf-card p-7">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--pf-danger)]">Transaction detail</h1>
+        <p className="mt-3 text-sm text-[var(--pf-danger)]">
           {errorMessage ?? (transactionDetailQuery.error ? loadErrorMessage : 'Transaction not found.')}
         </p>
-        <Link className="mt-4 inline-block rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/transactions">
+        <Link className="pf-button-ghost mt-4 inline-block" to="/transactions">
           Back to transactions
         </Link>
       </section>
@@ -242,7 +242,7 @@ export function TransactionDetailPage() {
         : 'Edit transaction';
 
   return (
-    <section className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
+    <section className="pf-card p-7">
       <PageHeader backTo="/transactions" title={heading} />
 
       <form className="mt-6 space-y-4" noValidate onSubmit={onSubmit}>
@@ -291,11 +291,11 @@ export function TransactionDetailPage() {
 
         {transactionDetail.kind === 'income_expense' ? (
           <div className="space-y-2">
-            <label className="text-sm text-slate-200" htmlFor="transaction-detail-category">
+            <label className="pf-label" htmlFor="transaction-detail-category">
               Category
             </label>
             <input
-              className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+              className="w-full pf-input"
               id="transaction-detail-category"
               onChange={(event) => setCategory(event.target.value)}
               required
@@ -305,12 +305,12 @@ export function TransactionDetailPage() {
         ) : null}
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="transaction-detail-amount">
+          <label className="pf-label" htmlFor="transaction-detail-amount">
             Amount ({currencySymbol})
           </label>
           <input
             autoComplete="off"
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="w-full pf-input"
             id="transaction-detail-amount"
             inputMode="decimal"
             name="amount"
@@ -323,11 +323,11 @@ export function TransactionDetailPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="transaction-detail-date">
+          <label className="pf-label" htmlFor="transaction-detail-date">
             Date
           </label>
           <input
-            className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="w-full pf-input"
             id="transaction-detail-date"
             onChange={(event) => setDate(event.target.value)}
             required
@@ -337,30 +337,28 @@ export function TransactionDetailPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-200" htmlFor="transaction-detail-note">
+          <label className="pf-label" htmlFor="transaction-detail-note">
             Note (optional)
           </label>
           <textarea
-            className="min-h-24 w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+            className="min-h-24 w-full pf-input"
             id="transaction-detail-note"
             onChange={(event) => setNote(event.target.value)}
             value={note}
           />
         </div>
 
-        {errorMessage ? (
-          <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">{errorMessage}</p>
-        ) : null}
+        {errorMessage ? <p className="pf-error-box">{errorMessage}</p> : null}
 
         <div className="flex flex-wrap gap-2">
           <button
-            className="rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+            className="pf-button-primary"
             disabled={isSubmitting || isDeleting}
             type="submit">
             {isSubmitting ? 'Saving...' : 'Save changes'}
           </button>
           <button
-            className="rounded-xl border border-rose-300/35 px-4 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/15 disabled:cursor-not-allowed disabled:border-slate-400/20 disabled:text-slate-400"
+            className="pf-danger-button disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isSubmitting || isDeleting}
             onClick={() => {
               void onDelete();

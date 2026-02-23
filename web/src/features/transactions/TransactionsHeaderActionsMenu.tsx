@@ -52,7 +52,7 @@ export function TransactionsHeaderActionsMenu({
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-label="Open actions menu"
-        className="inline-flex h-9 w-11 items-center justify-center rounded-md border border-slate-300/20 bg-slate-900/70 text-slate-300 hover:bg-slate-700/40"
+        className="pf-icon-button h-9 w-11 pf-muted-text"
         onClick={() => setIsOpen((current) => !current)}
         type="button">
         <EllipsisVerticalIcon className="h-5 w-5" />
@@ -61,11 +61,11 @@ export function TransactionsHeaderActionsMenu({
       {isOpen ? (
         <div
           aria-label="Transactions actions"
-          className="absolute right-0 top-11 z-10 w-44 rounded-xl border border-slate-300/20 bg-slate-900/95 p-1 shadow-xl"
+          className="pf-menu absolute right-0 top-11 z-10 w-44"
           role="menu">
           <button
             autoFocus
-            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-700/40 disabled:cursor-not-allowed disabled:text-slate-500 disabled:hover:bg-transparent"
+            className="pf-menu-item disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
             disabled={isTransferDisabled}
             onClick={() => onChooseAction('transfer')}
             role="menuitem"
@@ -73,7 +73,7 @@ export function TransactionsHeaderActionsMenu({
             Transfer
           </button>
           <button
-            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-700/40"
+            className="pf-menu-item"
             onClick={() => onChooseAction('adjustment')}
             role="menuitem"
             type="button">

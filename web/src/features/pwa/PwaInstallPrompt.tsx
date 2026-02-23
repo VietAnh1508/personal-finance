@@ -67,10 +67,10 @@ export function PwaInstallPrompt() {
         aria-label="Install app prompt"
         className="fixed inset-x-0 z-30 flex justify-center px-4"
         style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom))' }}>
-        <div className="flex w-full max-w-md items-center justify-between gap-3 rounded-2xl border border-amber-300/40 bg-slate-950/90 px-4 py-3 text-sm text-slate-100 shadow-2xl backdrop-blur">
-          <p className="leading-5 text-slate-200">Install Personal Finance for faster home-screen access.</p>
+        <div className="pf-soft-card flex w-full max-w-md items-center justify-between gap-3 px-4 py-3 text-sm shadow-2xl backdrop-blur">
+          <p className="pf-label leading-5">Install Personal Finance for faster home-screen access.</p>
           <button
-            className="rounded-md bg-amber-300 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-950 hover:bg-amber-200"
+            className="pf-button-primary rounded-md px-3 py-2 text-xs uppercase tracking-wide"
             onClick={handleInstallClick}
             type="button">
             Install app

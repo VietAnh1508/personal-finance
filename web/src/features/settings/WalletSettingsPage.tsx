@@ -71,13 +71,13 @@ export function WalletSettingsPage() {
   }
 
   return (
-    <section className="space-y-4 rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
+    <section className="space-y-4 pf-card p-7">
       <PageHeader
         backLabel="Back to settings"
         backTo="/settings"
         rightAction={
           <Link
-            className="inline-flex h-9 items-center rounded-md border border-slate-300/20 px-3 text-sm font-medium hover:bg-slate-700/40"
+            className="pf-button-ghost inline-flex h-9 items-center font-medium"
             to="/settings/wallets/add">
             Add
           </Link>
@@ -85,51 +85,51 @@ export function WalletSettingsPage() {
         title="Wallet management"
       />
 
-      <div className="flex items-center gap-2 rounded-2xl border border-slate-300/20 bg-slate-900/35 px-4 py-3">
+      <div className="pf-soft-card flex items-center gap-2 px-4 py-3">
         <input
           checked={showArchivedWallets}
-          className="accent-amber-300"
+          className="pf-checkbox"
           id="wallet-settings-show-archived"
           onChange={(event) => setShowArchivedWallets(event.target.checked)}
           type="checkbox"
         />
-        <label className="text-sm text-slate-200" htmlFor="wallet-settings-show-archived">
+        <label className="pf-label" htmlFor="wallet-settings-show-archived">
           Show archived wallets
         </label>
       </div>
 
       {errorMessage || walletSettingsQuery.error ? (
-        <p className="rounded-xl border border-rose-300/30 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+        <p className="pf-error-box">
           {errorMessage ?? loadErrorMessage}
         </p>
       ) : null}
 
       <div className="space-y-3">
-        {activeWallets.length === 0 ? <p className="text-sm text-slate-400">No active wallets.</p> : null}
+        {activeWallets.length === 0 ? <p className="pf-muted-text text-sm">No active wallets.</p> : null}
 
         {activeWallets.map((wallet) => {
           const isArchiving = archivingWalletId === wallet.id;
 
           return (
-            <article key={wallet.id} className="rounded-xl border border-slate-300/20 bg-slate-900/60 p-4">
+            <article key={wallet.id} className="pf-strong-card p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <WalletIcon className="h-5 w-5 text-slate-200" iconKey={wallet.iconKey} />
+                  <WalletIcon className="h-5 w-5 text-[var(--pf-text-secondary)]" iconKey={wallet.iconKey} />
                   <div>
-                    <p className="font-medium text-slate-100">{wallet.name}</p>
+                    <p className="font-medium">{wallet.name}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <Link
                     aria-label={`Edit ${wallet.name}`}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/20 hover:bg-slate-700/40"
+                    className="pf-icon-button h-8 w-8"
                     to={`/settings/wallets/${wallet.id}/edit`}>
                     <PencilSquareIcon aria-hidden className="h-4 w-4" />
                   </Link>
                   <button
                     aria-label={`Archive ${wallet.name}`}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-300/30 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="pf-danger-icon-button h-8 w-8"
                     disabled={isArchiving}
                     onClick={() => {
                       void onArchiveWallet(wallet);
@@ -149,15 +149,15 @@ export function WalletSettingsPage() {
       </div>
 
       {showArchivedWallets ? (
-        <div className="space-y-3 rounded-2xl border border-slate-300/20 bg-slate-900/35 p-4">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">Archived wallets</h2>
-          {archivedWallets.length === 0 ? <p className="text-sm text-slate-400">No archived wallets.</p> : null}
+        <div className="pf-soft-card space-y-3 p-4">
+          <h2 className="pf-muted-text text-sm font-semibold uppercase tracking-[0.16em]">Archived wallets</h2>
+          {archivedWallets.length === 0 ? <p className="pf-muted-text text-sm">No archived wallets.</p> : null}
           {archivedWallets.map((wallet) => (
             <article
               key={wallet.id}
-              className="flex items-center gap-3 rounded-xl border border-slate-300/20 bg-slate-900/60 p-4 opacity-85">
-              <WalletIcon className="h-5 w-5 text-slate-200" iconKey={wallet.iconKey} />
-              <p className="font-medium text-slate-200">{wallet.name}</p>
+              className="pf-strong-card flex items-center gap-3 p-4 opacity-85">
+              <WalletIcon className="h-5 w-5 text-[var(--pf-text-secondary)]" iconKey={wallet.iconKey} />
+              <p className="pf-label font-medium">{wallet.name}</p>
             </article>
           ))}
         </div>

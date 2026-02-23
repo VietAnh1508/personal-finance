@@ -4,8 +4,204 @@
 
 :root {
   font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --pf-bg-canvas: #122347;
+  --pf-text-primary: #eaf1ff;
+  --pf-text-secondary: #c5d6f6;
+  --pf-text-muted: #9fb4de;
+  --pf-border-soft: rgba(197, 214, 246, 0.26);
+  --pf-border-strong: rgba(197, 214, 246, 0.4);
+  --pf-surface-card: rgba(24, 40, 84, 0.62);
+  --pf-surface-soft: rgba(35, 54, 102, 0.5);
+  --pf-surface-strong: rgba(18, 31, 67, 0.78);
+  --pf-surface-hover: rgba(137, 169, 223, 0.18);
+  --pf-input-bg: rgba(12, 25, 59, 0.68);
+  --pf-accent: #9cbcf5;
+  --pf-accent-strong: #89afea;
+  --pf-accent-contrast: #081432;
+  --pf-focus-ring: rgba(156, 188, 245, 0.42);
+  --pf-danger: #f8a9b9;
+  --pf-danger-soft: rgba(255, 106, 130, 0.16);
+  --pf-danger-border: rgba(248, 169, 185, 0.45);
+}
+
+:root[data-theme='light'] {
+  --pf-bg-canvas: #d8e5fb;
+  --pf-text-primary: #0d1a3a;
+  --pf-text-secondary: #1c2d57;
+  --pf-text-muted: #32487a;
+  --pf-border-soft: rgba(20, 46, 94, 0.22);
+  --pf-border-strong: rgba(20, 46, 94, 0.32);
+  --pf-surface-card: rgba(234, 242, 255, 0.78);
+  --pf-surface-soft: rgba(226, 237, 255, 0.82);
+  --pf-surface-strong: rgba(214, 228, 251, 0.95);
+  --pf-surface-hover: rgba(20, 46, 94, 0.1);
+  --pf-input-bg: rgba(248, 251, 255, 0.9);
+  --pf-accent: #395f9f;
+  --pf-accent-strong: #2d4f86;
+  --pf-accent-contrast: #f3f7ff;
+  --pf-focus-ring: rgba(57, 95, 159, 0.28);
+  --pf-danger: #a11f3d;
+  --pf-danger-soft: rgba(161, 31, 61, 0.1);
+  --pf-danger-border: rgba(161, 31, 61, 0.28);
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  background: var(--pf-bg-canvas);
+  color: var(--pf-text-primary);
+}
+
+@layer components {
+  .pf-page-shell {
+    @apply min-h-screen px-6 py-10;
+    background: var(--pf-bg-canvas);
+    color: var(--pf-text-primary);
+  }
+
+  .pf-page-shell-center {
+    @apply grid min-h-screen place-items-center px-6;
+    background: var(--pf-bg-canvas);
+    color: var(--pf-text-primary);
+  }
+
+  .pf-card {
+    @apply rounded-3xl border shadow-xl backdrop-blur;
+    border-color: var(--pf-border-soft);
+    background: var(--pf-surface-card);
+  }
+
+  .pf-soft-card {
+    @apply rounded-2xl border;
+    border-color: var(--pf-border-soft);
+    background: var(--pf-surface-soft);
+  }
+
+  .pf-strong-card {
+    @apply rounded-xl border;
+    border-color: var(--pf-border-soft);
+    background: var(--pf-surface-strong);
+  }
+
+  .pf-label {
+    @apply text-sm;
+    color: var(--pf-text-secondary);
+  }
+
+  .pf-muted-text {
+    color: var(--pf-text-muted);
+  }
+
+  .pf-kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.24em];
+    color: var(--pf-accent);
+  }
+
+  .pf-input {
+    @apply rounded-xl border px-3 py-2 text-sm outline-none transition;
+    border-color: var(--pf-border-soft);
+    background: var(--pf-input-bg);
+    color: var(--pf-text-primary);
+  }
+
+  .pf-input::placeholder {
+    color: var(--pf-text-muted);
+  }
+
+  .pf-input:focus {
+    border-color: var(--pf-border-strong);
+    box-shadow: 0 0 0 2px var(--pf-focus-ring);
+  }
+
+  .pf-button-primary {
+    @apply rounded-xl px-4 py-2 text-sm font-semibold transition;
+    background: var(--pf-accent);
+    color: var(--pf-accent-contrast);
+  }
+
+  .pf-button-primary:hover {
+    background: var(--pf-accent-strong);
+  }
+
+  .pf-button-primary:disabled {
+    @apply cursor-not-allowed;
+    background: color-mix(in srgb, var(--pf-surface-strong) 85%, #9ca3af 15%);
+    color: color-mix(in srgb, var(--pf-text-muted) 78%, #9ca3af 22%);
+  }
+
+  .pf-button-ghost {
+    @apply rounded-md border px-3 py-2 text-sm transition;
+    border-color: var(--pf-border-soft);
+  }
+
+  .pf-button-ghost:hover {
+    background: var(--pf-surface-hover);
+  }
+
+  .pf-icon-button {
+    @apply inline-flex items-center justify-center rounded-md border transition;
+    border-color: var(--pf-border-soft);
+    background: var(--pf-surface-strong);
+  }
+
+  .pf-icon-button:hover {
+    background: var(--pf-surface-hover);
+  }
+
+  .pf-menu {
+    @apply rounded-xl border p-1 shadow-xl;
+    border-color: var(--pf-border-soft);
+    background: color-mix(in srgb, var(--pf-surface-strong) 96%, transparent 4%);
+  }
+
+  .pf-menu-item {
+    @apply block w-full rounded-lg px-3 py-2 text-left text-sm transition;
+    color: var(--pf-text-primary);
+  }
+
+  .pf-menu-item:hover {
+    background: var(--pf-surface-hover);
+  }
+
+  .pf-footer-nav {
+    border-top: 1px solid var(--pf-border-soft);
+    background: color-mix(in srgb, var(--pf-surface-strong) 92%, transparent 8%);
+  }
+
+  .pf-checkbox {
+    accent-color: var(--pf-accent);
+  }
+
+  .pf-error-box {
+    @apply rounded-xl border px-3 py-2 text-sm;
+    border-color: var(--pf-danger-border);
+    background: var(--pf-danger-soft);
+    color: var(--pf-danger);
+  }
+
+  .pf-danger-button {
+    @apply rounded-xl border px-4 py-2 text-sm font-semibold transition;
+    border-color: var(--pf-danger-border);
+    color: var(--pf-danger);
+  }
+
+  .pf-danger-button:hover {
+    background: var(--pf-danger-soft);
+  }
+
+  .pf-danger-icon-button {
+    @apply inline-flex items-center justify-center rounded-lg border transition;
+    border-color: color-mix(in srgb, var(--pf-danger-border) 90%, #f43f5e 10%);
+    background: color-mix(in srgb, var(--pf-danger-soft) 82%, #f43f5e 18%);
+    color: #ffd6de;
+  }
+
+  .pf-danger-icon-button:hover {
+    background: color-mix(in srgb, var(--pf-danger-soft) 62%, #f43f5e 38%);
+    border-color: color-mix(in srgb, var(--pf-danger-border) 72%, #f43f5e 28%);
+  }
+
+  .pf-danger-icon-button:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
 }

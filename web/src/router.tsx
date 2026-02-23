@@ -15,47 +15,47 @@ import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 
 function RouteDirectoryPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 py-10 text-slate-100">
-      <section className="mx-auto max-w-3xl rounded-3xl border border-slate-200/20 bg-slate-900/50 p-8 shadow-2xl backdrop-blur">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">Web Migration</p>
+    <main className="pf-page-shell">
+      <section className="pf-card mx-auto max-w-3xl p-8 shadow-2xl">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--pf-accent)]">Web Migration</p>
         <h1 className="mt-3 text-3xl font-semibold">Routing Directory</h1>
-        <p className="mt-4 text-sm leading-7 text-slate-300">Development shortcut links for route verification.</p>
+        <p className="pf-muted-text mt-4 text-sm leading-7">Development shortcut links for route verification.</p>
 
         <nav aria-label="Route directory" className="mt-8 grid gap-2 sm:grid-cols-2">
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/">
+          <Link className="pf-button-ghost" to="/">
             App Root Gate
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/onboarding/currency">
+          <Link className="pf-button-ghost" to="/onboarding/currency">
             Onboarding Currency
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/onboarding/wallet">
+          <Link className="pf-button-ghost" to="/onboarding/wallet">
             First Wallet Setup
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/transactions">
+          <Link className="pf-button-ghost" to="/transactions">
             Transactions
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/transactions/add">
+          <Link className="pf-button-ghost" to="/transactions/add">
             Add Transaction
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/transactions/transfer">
+          <Link className="pf-button-ghost" to="/transactions/transfer">
             Transfer
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/transactions/adjustment">
+          <Link className="pf-button-ghost" to="/transactions/adjustment">
             Adjustment
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/transactions/demo-id">
+          <Link className="pf-button-ghost" to="/transactions/demo-id">
             Transaction Detail
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings">
+          <Link className="pf-button-ghost" to="/settings">
             Settings
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets">
+          <Link className="pf-button-ghost" to="/settings/wallets">
             Wallet Settings
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets/add">
+          <Link className="pf-button-ghost" to="/settings/wallets/add">
             Add Wallet
           </Link>
-          <Link className="rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/settings/wallets/demo-wallet/edit">
+          <Link className="pf-button-ghost" to="/settings/wallets/demo-wallet/edit">
             Edit Wallet
           </Link>
         </nav>
@@ -69,7 +69,7 @@ function AppLayout() {
   const showFooterNavigation = pathname === '/transactions' || pathname === '/settings';
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 py-10 text-slate-100">
+    <main className="pf-page-shell">
       <div className={`mx-auto max-w-4xl space-y-6 ${showFooterNavigation ? 'pb-24' : ''}`}>
         <Outlet />
       </div>
@@ -80,11 +80,11 @@ function AppLayout() {
 
 function NotFoundPage() {
   return (
-    <main className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 text-slate-100">
-      <section className="max-w-lg rounded-3xl border border-slate-300/20 bg-slate-900/60 p-8 text-center shadow-xl">
+    <main className="pf-page-shell-center">
+      <section className="pf-card max-w-lg p-8 text-center">
         <h1 className="text-2xl font-semibold">404 - Route Not Found</h1>
-        <p className="mt-3 text-slate-300">The requested page does not exist in the migration route shell.</p>
-        <Link className="mt-6 inline-block rounded-md border border-slate-300/20 px-3 py-2 hover:bg-slate-700/40" to="/routes">
+        <p className="pf-muted-text mt-3">The requested page does not exist in the migration route shell.</p>
+        <Link className="pf-button-ghost mt-6 inline-block" to="/routes">
           Open Route Directory
         </Link>
       </section>

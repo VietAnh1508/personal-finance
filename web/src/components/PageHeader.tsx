@@ -15,7 +15,7 @@ export function PageHeader({ title, backTo, backLabel = 'Back', className, right
     <div className={className ?? 'grid grid-cols-[auto_1fr_auto] items-center gap-3'}>
       <Link
         aria-label={backLabel}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-300/20 hover:bg-slate-700/40"
+        className="pf-icon-button h-9 w-9"
         to={backTo}>
         <ArrowLeftIcon aria-hidden className="h-4 w-4" />
         <span className="sr-only">{backLabel}</span>

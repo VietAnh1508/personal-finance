@@ -79,10 +79,10 @@ export function WalletEditPage() {
 
   if (!wallet) {
     return (
-      <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Edit wallet</h1>
-        <p className="mt-3 text-sm text-rose-200">{pageErrorMessage}</p>
-        <Link className="mt-4 inline-block rounded-md border border-slate-300/20 px-3 py-2 text-sm hover:bg-slate-700/40" to="/settings/wallets">
+      <section className="pf-card p-7">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--pf-danger)]">Edit wallet</h1>
+        <p className="mt-3 text-sm text-[var(--pf-danger)]">{pageErrorMessage}</p>
+        <Link className="pf-button-ghost mt-4 inline-block" to="/settings/wallets">
           Back to wallet management
         </Link>
       </section>
@@ -90,7 +90,7 @@ export function WalletEditPage() {
   }
 
   return (
-    <section className="space-y-4 rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
+    <section className="space-y-4 pf-card p-7">
       <PageHeader backLabel="Back to wallet management" backTo="/settings/wallets" title="Edit wallet" />
 
       <WalletForm

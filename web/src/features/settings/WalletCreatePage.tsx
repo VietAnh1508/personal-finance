@@ -77,7 +77,7 @@ export function WalletCreatePage() {
   }
 
   return (
-    <section className="space-y-4 rounded-3xl border border-slate-200/20 bg-slate-900/50 p-7 shadow-xl backdrop-blur">
+    <section className="space-y-4 pf-card p-7">
       <PageHeader backLabel="Back to wallet management" backTo="/settings/wallets" title="Add wallet" />
 
       <WalletForm

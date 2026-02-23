@@ -25,8 +25,8 @@ export function FirstWalletOnboardingPage() {
 
   if (isLoading) {
     return (
-      <main className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 text-slate-100">
-        <p className="text-sm text-slate-300">Loading onboarding...</p>
+      <main className="pf-page-shell-center">
+        <p className="pf-muted-text text-sm">Loading onboarding...</p>
       </main>
     );
   }
@@ -79,22 +79,22 @@ export function FirstWalletOnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 py-10 text-slate-100">
-      <section className="mx-auto max-w-4xl rounded-3xl border border-slate-200/20 bg-slate-900/50 p-8 shadow-2xl backdrop-blur md:p-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-300">Step 2 of 2</p>
+    <main className="pf-page-shell">
+      <section className="pf-card mx-auto max-w-4xl p-8 shadow-2xl md:p-10">
+        <p className="pf-kicker">Step 2 of 2</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Create your first wallet</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
+        <p className="pf-muted-text mt-4 max-w-2xl text-sm leading-6 md:text-base">
           Add a wallet name, choose an icon, and set an opening balance. Currency display is set to{' '}
-          <span className="font-semibold text-amber-200">{selectedCurrency}</span>.
+          <span className="font-semibold text-[var(--pf-accent)]">{selectedCurrency}</span>.
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-[1.3fr,1fr]">
-          <section className="space-y-4 rounded-2xl border border-slate-300/20 bg-slate-800/25 p-5">
-            <label className="block text-sm font-medium text-slate-200" htmlFor="wallet-name">
+          <section className="pf-soft-card space-y-4 p-5">
+            <label className="pf-label block font-medium" htmlFor="wallet-name">
               Wallet name
             </label>
             <input
-              className="w-full rounded-xl border border-slate-300/30 bg-slate-900/60 px-4 py-3 text-base text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/40"
+              className="pf-input w-full px-4 py-3 text-base"
               id="wallet-name"
               maxLength={60}
               onChange={(event) => setWalletName(event.target.value)}
@@ -102,22 +102,22 @@ export function FirstWalletOnboardingPage() {
               value={walletName}
             />
 
-            <label className="block text-sm font-medium text-slate-200" htmlFor="wallet-initial-balance">
+            <label className="pf-label block font-medium" htmlFor="wallet-initial-balance">
               Initial balance
             </label>
             <input
-              className="w-full rounded-xl border border-slate-300/30 bg-slate-900/60 px-4 py-3 text-base text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/40"
+              className="pf-input w-full px-4 py-3 text-base"
               id="wallet-initial-balance"
               inputMode="decimal"
               onChange={(event) => handleInitialBalanceChange(event.target.value)}
               placeholder="0.00"
               value={initialBalance}
             />
-            <p className="text-xs text-slate-400">Enter a valid amount (up to 2 decimal places).</p>
+            <p className="pf-muted-text text-xs">Enter a valid amount (up to 2 decimal places).</p>
           </section>
 
-          <section className="rounded-2xl border border-slate-300/20 bg-slate-800/25 p-5">
-            <p className="text-sm font-medium text-slate-200">Wallet icon</p>
+          <section className="pf-soft-card p-5">
+            <p className="pf-label font-medium">Wallet icon</p>
             <div className="mt-3 grid grid-cols-3 gap-3">
               {WALLET_ICON_OPTIONS.map((iconOption) => {
                 const isSelected = selectedIcon === iconOption.key;
@@ -128,7 +128,7 @@ export function FirstWalletOnboardingPage() {
                     className={`rounded-xl border p-3 transition ${
                       isSelected
                         ? 'border-emerald-300 bg-emerald-300/10 ring-2 ring-emerald-300/40'
-                        : 'border-slate-300/25 bg-slate-900/55 hover:border-amber-300/45'
+                        : 'border-[var(--pf-border-soft)] bg-[var(--pf-surface-strong)] hover:border-[var(--pf-border-strong)]'
                     }`}
                     onClick={() => setSelectedIcon(iconOption.key)}
                     type="button">
@@ -141,12 +141,12 @@ export function FirstWalletOnboardingPage() {
           </section>
         </div>
 
-        {parsedBalance === null ? <p className="mt-5 text-sm text-rose-300">Enter a valid amount.</p> : null}
-        {errorMessage ? <p className="mt-2 text-sm text-rose-300">{errorMessage}</p> : null}
+        {parsedBalance === null ? <p className="mt-5 text-sm text-[var(--pf-danger)]">Enter a valid amount.</p> : null}
+        {errorMessage ? <p className="mt-2 text-sm text-[var(--pf-danger)]">{errorMessage}</p> : null}
 
         <div className="mt-8 flex justify-end">
           <button
-            className="rounded-xl bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+            className="pf-button-primary px-6 py-3"
             disabled={!isFormValid || isSaving}
             onClick={() => {
               void handleCreateWallet();

@@ -17,8 +17,8 @@ export function CurrencyOnboardingPage() {
 
   if (isLoading) {
     return (
-      <main className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 text-slate-100">
-        <p className="text-sm text-slate-300">Loading onboarding...</p>
+      <main className="pf-page-shell-center">
+        <p className="pf-muted-text text-sm">Loading onboarding...</p>
       </main>
     );
   }
@@ -61,11 +61,11 @@ export function CurrencyOnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-6 py-10 text-slate-100">
-      <section className="mx-auto max-w-4xl rounded-3xl border border-slate-200/20 bg-slate-900/50 p-8 shadow-2xl backdrop-blur md:p-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-300">Step 1 of 2</p>
+    <main className="pf-page-shell">
+      <section className="pf-card mx-auto max-w-4xl p-8 shadow-2xl md:p-10">
+        <p className="pf-kicker">Step 1 of 2</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Choose your currency</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
+        <p className="pf-muted-text mt-4 max-w-2xl text-sm leading-6 md:text-base">
           This sets how money is displayed across wallets and transactions. You can update it later in settings.
         </p>
 
@@ -79,12 +79,12 @@ export function CurrencyOnboardingPage() {
                 className={`group rounded-2xl border p-5 text-left transition ${
                   isSelected
                     ? 'border-emerald-300 bg-emerald-300/10 ring-2 ring-emerald-300/40'
-                    : 'border-slate-300/20 bg-slate-800/30 hover:border-amber-300/40 hover:bg-slate-800/60'
+                    : 'border-[var(--pf-border-soft)] bg-[var(--pf-surface-soft)] hover:border-[var(--pf-border-strong)] hover:bg-[var(--pf-surface-hover)]'
                 }`}
                 onClick={() => setSelectedCode(currency.code)}
                 type="button">
                 <p className="text-lg font-semibold">{currency.label}</p>
-                <p className="mt-1 text-sm text-slate-300">
+                <p className="pf-muted-text mt-1 text-sm">
                   {currency.code} ({currency.symbol}) • {currency.fractionDigits} decimals
                 </p>
               </button>
@@ -92,11 +92,11 @@ export function CurrencyOnboardingPage() {
           })}
         </div>
 
-        {errorMessage ? <p className="mt-5 text-sm text-rose-300">{errorMessage}</p> : null}
+        {errorMessage ? <p className="mt-5 text-sm text-[var(--pf-danger)]">{errorMessage}</p> : null}
 
         <div className="mt-8 flex justify-end">
           <button
-            className="rounded-xl bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+            className="pf-button-primary px-6 py-3"
             disabled={!selectedCode || isSaving}
             onClick={() => {
               void handleContinue();

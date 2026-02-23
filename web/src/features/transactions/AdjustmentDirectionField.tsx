@@ -13,22 +13,22 @@ export function AdjustmentDirectionField({
 }: AdjustmentDirectionFieldProps) {
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm text-slate-200">Direction</legend>
+      <legend className="pf-label">Direction</legend>
       <div className="flex gap-3">
-        <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">
+        <label className="inline-flex items-center gap-2 rounded-xl border border-[var(--pf-border-soft)] bg-[var(--pf-input-bg)] px-3 py-2 text-sm">
           <input
             checked={value === 'increase'}
-            className="accent-amber-300"
+            className="pf-checkbox"
             name={name}
             onChange={() => onChange('increase')}
             type="radio"
           />
           Increase
         </label>
-        <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">
+        <label className="inline-flex items-center gap-2 rounded-xl border border-[var(--pf-border-soft)] bg-[var(--pf-input-bg)] px-3 py-2 text-sm">
           <input
             checked={value === 'decrease'}
-            className="accent-amber-300"
+            className="pf-checkbox"
             name={name}
             onChange={() => onChange('decrease')}
             type="radio"

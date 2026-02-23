@@ -175,9 +175,9 @@ export function TransactionsPage() {
       contextQuery.error instanceof Error ? contextQuery.error.message : 'Unable to load transactions.';
 
     return (
-      <section className="rounded-3xl border border-rose-300/30 bg-rose-500/10 p-7 shadow-xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-rose-100">Transactions</h1>
-        <p className="mt-3 text-sm text-rose-200">{errorMessage}</p>
+      <section className="pf-card p-7">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--pf-danger)]">Transactions</h1>
+        <p className="mt-3 text-sm text-[var(--pf-danger)]">{errorMessage}</p>
       </section>
     );
   }
@@ -185,12 +185,12 @@ export function TransactionsPage() {
   return (
     <section className="space-y-4">
       <h1 className="sr-only">Transactions</h1>
-      <div className="rounded-3xl border border-slate-200/20 bg-slate-900/50 p-6 shadow-xl backdrop-blur">
+      <div className="pf-card p-6">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
           <div className="relative h-9 w-11">
-            <div className="pointer-events-none inline-flex h-9 w-11 items-center justify-center gap-1 rounded-md border border-slate-300/20 bg-slate-900/70">
-              <WalletIcon className="h-4 w-4 text-slate-200" iconKey={selectedWallet?.iconKey ?? 'wallet'} />
-              <ChevronDownIcon className="h-3.5 w-3.5 text-slate-300" />
+            <div className="pf-icon-button pointer-events-none inline-flex h-9 w-11 items-center justify-center gap-1">
+              <WalletIcon className="h-4 w-4 text-[var(--pf-text-secondary)]" iconKey={selectedWallet?.iconKey ?? 'wallet'} />
+              <ChevronDownIcon className="h-3.5 w-3.5 text-[var(--pf-text-muted)]" />
             </div>
             <label className="sr-only" htmlFor="wallet-context">
               Select wallet context
@@ -210,8 +210,8 @@ export function TransactionsPage() {
           </div>
 
           <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{selectedContextLabel}</p>
-            <p className="text-3xl font-semibold text-amber-200">
+            <p className="pf-muted-text text-xs uppercase tracking-[0.18em]">{selectedContextLabel}</p>
+            <p className="text-3xl font-semibold text-[var(--pf-text-primary)]">
               {formatMinorUnits(displayedTotalMinorUnits, currencySymbol, currencyFractionDigits)}
             </p>
           </div>
@@ -226,13 +226,11 @@ export function TransactionsPage() {
         </div>
       </div>
 
-      {actionErrorMessage ? (
-        <p className="rounded-2xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{actionErrorMessage}</p>
-      ) : null}
+      {actionErrorMessage ? <p className="pf-error-box rounded-2xl px-4 py-3">{actionErrorMessage}</p> : null}
 
       <div className="space-y-3">
         {visibleTransactions.length === 0 ? (
-          <div className="rounded-2xl border border-slate-300/20 bg-slate-900/40 p-5 text-sm text-slate-300">
+          <div className="pf-soft-card pf-muted-text p-5 text-sm">
             No transactions yet.
           </div>
         ) : null}
@@ -240,34 +238,34 @@ export function TransactionsPage() {
         {dateSections.map((section) => (
           <article
             key={section.date}
-            className="overflow-hidden rounded-2xl border border-slate-300/20 bg-slate-900/40 shadow-lg shadow-slate-950/25">
+            className="pf-soft-card overflow-hidden shadow-lg shadow-slate-950/25">
             <header className="flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
-                <p className="text-2xl font-semibold leading-none text-slate-100">{section.dayNumber}</p>
+                <p className="text-2xl font-semibold leading-none">{section.dayNumber}</p>
                 <div>
-                  <p className="text-sm text-slate-100">{section.weekdayLabel}</p>
-                  <p className="text-xs text-slate-400">{section.monthYearLabel}</p>
+                  <p className="text-sm">{section.weekdayLabel}</p>
+                  <p className="pf-muted-text text-xs">{section.monthYearLabel}</p>
                 </div>
               </div>
-              <p className="text-sm font-semibold text-slate-200">
+              <p className="text-sm font-semibold text-[var(--pf-text-primary)]">
                 {formatSignedMinorUnits(section.dailyNet, currencySymbol, currencyFractionDigits)}
               </p>
             </header>
-            <div className="border-t border-slate-300/15">
+            <div className="border-t border-[var(--pf-border-soft)]">
               {section.transactions.map((transaction) => {
                 const signedAmount = getSignedTransactionAmount(transaction);
-                const amountColor = signedAmount < 0 ? 'text-rose-300' : 'text-emerald-300';
+                const amountColor = signedAmount < 0 ? 'text-rose-200' : 'text-emerald-200';
 
                 return (
                   <button
                     key={transaction.id}
-                    className="block w-full border-b border-slate-300/10 px-4 py-3 text-left last:border-b-0 hover:bg-slate-700/20"
+                    className="block w-full border-b border-[var(--pf-border-soft)] px-4 py-3 text-left last:border-b-0 hover:bg-[var(--pf-surface-hover)]"
                     onClick={() => navigate(`/transactions/${transaction.id}`)}
                     type="button">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-slate-100">{transaction.category}</p>
-                        {transaction.note ? <p className="mt-1 text-xs text-slate-400">{transaction.note}</p> : null}
+                        <p className="font-medium">{transaction.category}</p>
+                        {transaction.note ? <p className="pf-muted-text mt-1 text-xs">{transaction.note}</p> : null}
                       </div>
                       <p className={`text-sm font-semibold ${amountColor}`}>
                         {formatMinorUnits(Math.abs(signedAmount), currencySymbol, currencyFractionDigits)}

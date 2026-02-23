@@ -9,11 +9,11 @@ type IncomeExpenseTypeFieldProps = {
 export function IncomeExpenseTypeField({ id, value, onChange }: IncomeExpenseTypeFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm text-slate-200" htmlFor={id}>
+      <label className="pf-label" htmlFor={id}>
         Type
       </label>
       <select
-        className="w-full rounded-xl border border-slate-300/30 bg-slate-900/70 px-3 py-2 text-sm outline-none focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/30"
+        className="w-full pf-input"
         id={id}
         onChange={(event) => onChange(event.target.value as IncomeExpenseTransactionType)}
         value={value}>

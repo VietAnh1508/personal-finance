@@ -33,6 +33,7 @@
 - Update status as each story starts/completes.
 - Add implementation links or PR references under each story as needed.
 - Package manager standard: use `pnpm` for all dependency management and scripts.
+- Web theming foundation refactor is tracked and completed as `US-WEB-021` in `docs/PROGRESS_WEB.md`.
 - Frozen pending RN stories are carried into the web track in `docs/PROGRESS_WEB.md` as:
   - US-010 -> US-WEB-013
   - US-012 -> US-WEB-014
