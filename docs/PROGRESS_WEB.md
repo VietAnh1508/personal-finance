@@ -19,7 +19,8 @@
 - [x] US-WEB-006 Port add income/expense flow (web form + date input)
 - [x] US-WEB-007 Port transfer and adjustment flows
 - [x] US-WEB-008 Port transaction detail edit/delete flow
-- [ ] US-WEB-009 Implement backend sync API integration (outbox push/pull)
+- [ ] US-WEB-022 Set up backend API service (Hono + Drizzle + Neon + Clerk)
+- [ ] US-WEB-009 Implement backend sync integration (outbox push/pull) — depends on US-WEB-022
 - [x] US-WEB-010 Enable PWA installability and offline app shell
 - [ ] US-WEB-011 Set up web test infrastructure and migration parity checks
 - [ ] US-WEB-012 Decommission React Native/Expo app and make PWA the only client
